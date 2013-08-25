@@ -1,6 +1,5 @@
 /**
- * Classes used to incrementally solve a convex hull problem using the Jarvis'
- * March algorithm and display the steps in a GUI.
+ * Root classes to start the program's GUI and set up a model for solving.
  * 
  * @author Zach Friedland
  */
