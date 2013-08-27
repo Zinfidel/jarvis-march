@@ -45,4 +45,17 @@ public class Point {
 	return sqrt(x2 + y2);
     }
 
+    /** {@InheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+	// Ensure we are comparing points.
+        if (!(obj instanceof Point)) return false;
+        
+        // Ensure x and y values are the same.
+        Point point = (Point) obj;
+        boolean xEquals = (this.x == point.x);
+        boolean yEquals = (this.y == point.y);
+        
+        return xEquals && yEquals;
+    }
 }
