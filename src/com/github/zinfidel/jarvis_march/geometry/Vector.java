@@ -51,7 +51,7 @@ public class Vector {
     private static double RefAngle(Point position) {
 	double theta = atan2(position.y, position.x); // Implicit int -> double
 	
-	return (theta >= 0.0d) ? theta : (PI - theta);
+	return (theta >= 0.0d) ? theta : ((2.0d * PI) + theta);
     }
     
     /**
@@ -62,6 +62,8 @@ public class Vector {
      * @return An angle in the range of [0 <= theta < 2PI].
      */
     public double AngleTo(Vector vector) {
-	return vector.angle - this.angle;
+	double theta = vector.angle - this.angle;
+	
+	return (theta >= 0.0d) ? theta : ((2.0d * PI) + theta);
     }
 }

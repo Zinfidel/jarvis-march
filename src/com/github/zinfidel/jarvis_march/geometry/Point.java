@@ -39,8 +39,10 @@ public class Point {
      * @return The distance between this point and <code>point</code>.
      */
     public double DistanceTo(Point point) {
-	double x2 = (double) (x * x);
-	double y2 = (double) (y * y);
+	double xDiff = (double) (point.x - x);
+	double yDiff = (double) (point.y - y);
+	double x2 = xDiff * xDiff;
+	double y2 = yDiff * yDiff;
 	
 	return sqrt(x2 + y2);
     }
