@@ -46,7 +46,7 @@ public class Vector {
      * starting at the origin and pointing to <code>position</code>.
      * 
      * @param position Components of a position vector.
-     * @return An angle in the range of [0 <= θ < 2π].
+     * @return An angle in the range of [0 <= theta < 2PI].
      */
     private static double RefAngle(Point position) {
 	double theta = atan2(position.y, position.x); // Implicit int -> double
@@ -59,7 +59,7 @@ public class Vector {
      * and <code>vector</code>.
      * 
      * @param vector The vector to calculate the angle to.
-     * @return An angle in the range of [0 <= θ < 2π].
+     * @return An angle in the range of [0 <= theta < 2PI].
      */
     public double AngleTo(Vector vector) {
 	return vector.angle - this.angle;
