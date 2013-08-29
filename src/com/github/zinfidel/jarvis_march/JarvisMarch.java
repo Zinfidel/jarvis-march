@@ -1,12 +1,12 @@
 package com.github.zinfidel.jarvis_march;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -15,7 +15,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
+
+import com.github.zinfidel.jarvis_march.geometry.Point;
+import com.github.zinfidel.jarvis_march.visualization.GeometryPanel;
 
 /**
  * @author Zach Friedland
@@ -24,38 +26,68 @@ import javax.swing.border.EtchedBorder;
 public class JarvisMarch extends JFrame {
 
     private static final long serialVersionUID = -2988707585939084412L;
+    private static final int width = 640;
+    private static final int height = 480;
     
-    private final int width = 650;
-    private final int height = 400;
+    private GeometryPanel geoPanel;
+
+    // TODO: Test fields
+    private LinkedList<Point> model;
 
     /**
      * TODO: Document
      */
     public JarvisMarch() {
 	super();
+	initGUI();
+	
+	// TODO: Currently test code
+	model = new LinkedList<Point>();
+	model.add(new Point(1,1));
+	model.add(new Point(2,1));
+	model.add(new Point(2,2));
+	model.add(new Point(1,2));
+    }
 
+    /**
+     * Starts the program by displaying the GUI.
+     * 
+     * @param args Ignored.
+     */
+    public static void main(String[] args) {
+	EventQueue.invokeLater(new Runnable() {
+	    public void run() {
+		JarvisMarch frame = new JarvisMarch();
+		frame.setVisible(true);
+	    }
+	});
+    }
+
+    /**
+     * Initializes the Swing GUI elements of this frame and sets this
+     * instance's geometry panel field.
+     */
+    private void initGUI() {
 	// Set up the frame.
 	setTitle("Jarvis' March Convex Hull Visualizer");
 	setBounds(100, 100, width, height);
 	setMinimumSize(new Dimension(width, height));
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	
+
 	// Set up the content frame.
 	JPanel contentFrame = (JPanel) getContentPane();
 	contentFrame.setLayout(new BorderLayout());
 	contentFrame.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 	// Set up the geometry viewing pane.
-	// TODO: Surrogate pane for now - replace with actual geometry pane later.
-	JPanel PnlGeometry = new JPanel();
-	PnlGeometry.setBackground(Color.WHITE);
-	PnlGeometry.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-	contentFrame.add(PnlGeometry, BorderLayout.CENTER);
+	GeometryPanel pnlGeometry = new GeometryPanel();
+	contentFrame.add(pnlGeometry, BorderLayout.CENTER);
+	geoPanel = pnlGeometry; // Set the member variable.
 
 	// Set up the controls panel.
 	JPanel pnlControls = new JPanel(new FlowLayout());
 	contentFrame.add(pnlControls, BorderLayout.SOUTH);
-	
+
 	// Set up point-count label, entry field, and generate button.
 	JLabel lblNumberOfPoints = new JLabel("Number of Points:");
 	pnlControls.add(lblNumberOfPoints);
@@ -90,20 +122,5 @@ public class JarvisMarch extends JFrame {
 
 	JLabel lblTimeUnits = new JLabel("ms");
 	pnlControls.add(lblTimeUnits);
-
-    }
-
-    /**
-     * Starts the program by displaying the GUI.
-     * 
-     * @param args Ignored.
-     */
-    public static void main(String[] args) {
-	EventQueue.invokeLater(new Runnable() {
-	    public void run() {
-		JarvisMarch frame = new JarvisMarch();
-		frame.setVisible(true);
-	    }
-	});
     }
 }
