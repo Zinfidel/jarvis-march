@@ -73,7 +73,7 @@ public class Vector {
      * @param vector The vector to calculate the angle to.
      * @return An angle in the range of [0 <= theta < 2PI].
      */
-    public double AngleTo(Vector vector) {
+    public double angleTo(Vector vector) {
 	double flippedAngle = (vector.angle + PI) % (2.0d * PI);
 	double theta = flippedAngle - this.angle;
 	

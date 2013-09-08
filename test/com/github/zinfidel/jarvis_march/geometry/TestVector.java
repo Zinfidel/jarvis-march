@@ -50,26 +50,26 @@ public class TestVector {
 	// Test right-angle (quadrant 1).
 	vec1 = new Vector(Point.Origin, new Point(1, 0));
 	vec2 = new Vector(vec1.end, new Point(1, 1));
-	assertEquals(PI / 2.0d, vec2.AngleTo(vec1), DELTA);
-	assertEquals(PI * (3.0d/2.0d), vec1.AngleTo(vec2), DELTA);
+	assertEquals(PI / 2.0d, vec2.angleTo(vec1), DELTA);
+	assertEquals(PI * (3.0d/2.0d), vec1.angleTo(vec2), DELTA);
 	
 	// Test acute-angle (quadrant 3).
 	vec1 = new Vector(Point.Origin, new Point(-1, -1));
 	vec2 = new Vector(vec1.end, new Point(-1, 0));
-	assertEquals(PI / 4.0d, vec1.AngleTo(vec2), DELTA);
-	assertEquals(2.0d * PI - (PI / 4.0d), vec2.AngleTo(vec1), DELTA);
+	assertEquals(PI / 4.0d, vec1.angleTo(vec2), DELTA);
+	assertEquals(2.0d * PI - (PI / 4.0d), vec2.angleTo(vec1), DELTA);
 	
 	// Test obtuse-angle (quadrant 1 - 4).
 	vec1 = new Vector(new Point(2, -2), new Point(1, -1));
 	vec2 = new Vector(vec1.end, new Point(2, 0));
-	assertEquals(PI / 2.0d, vec1.AngleTo(vec2), DELTA);
-	assertEquals(PI * 3.0d/2.0d, vec2.AngleTo(vec1), DELTA);
+	assertEquals(PI / 2.0d, vec1.angleTo(vec2), DELTA);
+	assertEquals(PI * 3.0d/2.0d, vec2.angleTo(vec1), DELTA);
 	
 	// Test concurrent lines.
 	vec1 = new Vector(Point.Origin, new Point(1, 0));
 	vec2 = new Vector(vec1.end, Point.Origin);
-	assertEquals(0.0d, vec1.AngleTo(vec2), DELTA);
-	assertEquals(0.0d, vec2.AngleTo(vec1), DELTA);
+	assertEquals(0.0d, vec1.angleTo(vec2), DELTA);
+	assertEquals(0.0d, vec2.angleTo(vec1), DELTA);
     }
 
 }
