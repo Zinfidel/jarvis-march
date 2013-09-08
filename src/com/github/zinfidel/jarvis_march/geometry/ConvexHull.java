@@ -156,7 +156,7 @@ public class ConvexHull {
 	hullEdges.add(newEdge);
 
 	// Calculate the angle.
-	hullAngles.add(oldEdge.angleTo(newEdge));
+	hullAngles.add(newEdge.angleTo(oldEdge));
     }
 
 }

@@ -6,13 +6,15 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static java.lang.Math.*;
+
 public class TestConvexHull {
 
+    private static final double DELTA = 0.01;
     public static final Point Point11 = new Point(1,1);
     public static final Vector Vector11 = new Vector(Point.Origin, Point11);
 
     private static ConvexHull basicHull;  // Just after constructing.
-    //private static ConvexHull normalHull; // With some points
 
     @Before
     public void setUp() throws Exception {
@@ -76,7 +78,7 @@ public class TestConvexHull {
 	} catch (UnsupportedOperationException e) {
 	    // Exception thrown as expected.
 	}
-	
+
 	// Edges
 	try {
 	    basicHull.getEdges().add(Vector11);
@@ -84,10 +86,10 @@ public class TestConvexHull {
 	} catch (UnsupportedOperationException e) {
 	    // Exception thrown as expected.
 	}
-	
+
 	// Angles
 	try {
-	    basicHull.getAngles().add(3.14);
+	    basicHull.getAngles().add(3.14d);
 	    Assert.fail();
 	} catch (UnsupportedOperationException e) {
 	    // Exception thrown as expected.
@@ -96,7 +98,26 @@ public class TestConvexHull {
 
     @Test
     public final void testAddPoint() {
-	fail("Not yet implemented");
+	// Test null exception.
+	try {
+	    basicHull.addPoint(null);
+	    Assert.fail();
+	} catch (IllegalArgumentException e) {
+	    // Exception thrown as expected.
+	}
+	
+	// Test add to just-initialized hull.
+	basicHull.addPoint(Point11);
+	assertEquals(Point11, basicHull.getPoints().get(1));
+	assertEquals(Vector11, basicHull.getEdges().get(1));
+	assertEquals(PI / 4.0d, basicHull.getAngles().get(0), DELTA);
+	
+	// Add another point.
+	Point point21 = new Point(2,1);
+	basicHull.addPoint(point21);
+	assertEquals(point21, basicHull.getPoints().get(2));
+	assertEquals(new Vector(Point11, point21), basicHull.getEdges().get(2));
+	assertEquals(PI * (5.0d / 4.0d), basicHull.getAngles().get(1), DELTA);
     }
 
 }
