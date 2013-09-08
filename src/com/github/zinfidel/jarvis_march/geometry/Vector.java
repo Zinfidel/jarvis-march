@@ -35,9 +35,9 @@ public class Vector {
     public Vector(Point start, Point end) {
 	this.start = start;
 	this.end = end;
-	this.position = end.Minus(start);
-	this.magnitude = start.DistanceTo(end);
-	this.angle = RefAngle(position);
+	this.position = end.minus(start);
+	this.magnitude = start.distanceTo(end);
+	this.angle = refAngle(position);
     }
     
     
@@ -48,7 +48,7 @@ public class Vector {
      * @param position Components of a position vector.
      * @return An angle in the range of [0 <= theta < 2PI].
      */
-    private static double RefAngle(Point position) {
+    private static double refAngle(Point position) {
 	double theta = atan2(position.y, position.x); // Implicit int -> double
 	
 	return (theta >= 0.0d) ? theta : ((2.0d * PI) + theta);
@@ -61,7 +61,7 @@ public class Vector {
      * @param vector The vector to calculate the angle to.
      * @return An angle in the range of [0 <= theta < 2PI].
      */
-    public double AngleTo(Vector vector) {
+    public double angleTo(Vector vector) {
 	double theta = vector.angle - this.angle;
 	
 	return (theta >= 0.0d) ? theta : ((2.0d * PI) + theta);

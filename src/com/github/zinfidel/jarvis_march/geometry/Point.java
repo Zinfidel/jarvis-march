@@ -25,7 +25,7 @@ public class Point implements Comparable<Point> {
      * @param point The point to subtract from this point.
      * @return A new point representing the difference between the points.
      */
-    public Point Minus(Point point) {
+    public Point minus(Point point) {
 	int x = this.x - point.x;
 	int y = this.y - point.y;
 
@@ -38,7 +38,7 @@ public class Point implements Comparable<Point> {
      * @param point The point to calculate distance to.
      * @return The distance between this point and <code>point</code>.
      */
-    public double DistanceTo(Point point) {
+    public double distanceTo(Point point) {
 	double xDiff = (double) (point.x - x);
 	double yDiff = (double) (point.y - y);
 	double x2 = xDiff * xDiff;
