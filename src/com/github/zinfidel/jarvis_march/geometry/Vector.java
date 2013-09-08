@@ -9,7 +9,16 @@ import static java.lang.Math.PI;
  * @author Zach Friedland
  */
 public class Vector {
+    
+    /** Unit vector representing the X-Axis. */
+    public static final Vector XAxis =
+	    new Vector(Point.Origin, new Point(1, 0));
+    
+    /** Unit vector representing the Y-Axis. */
+    public static final Vector YAxis = 
+	    new Vector(Point.Origin, new Point(0, 1));
 
+    
     /** The start point (origin) of this vector. */
     public final Point start;
 
