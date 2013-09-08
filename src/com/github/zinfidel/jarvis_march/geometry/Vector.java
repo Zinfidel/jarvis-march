@@ -56,13 +56,17 @@ public class Vector {
     
     /**
      * Calculates the anti-clockwise angle between this vector
-     * and <code>vector</code>.
+     * and <code>vector</code>. This method assumes a vector addition, or tip-
+     * to-tail relationship between the vectors, where the tail of this vector
+     * is placed at the tip of <code>vector</code>. This is effectively achieved
+     * by mirroring <code>vector</code>.
      * 
      * @param vector The vector to calculate the angle to.
      * @return An angle in the range of [0 <= theta < 2PI].
      */
     public double AngleTo(Vector vector) {
-	double theta = vector.angle - this.angle;
+	double flippedAngle = (vector.angle + PI) % (2.0d * PI);
+	double theta = flippedAngle - this.angle;
 	
 	return (theta >= 0.0d) ? theta : ((2.0d * PI) + theta);
     }
