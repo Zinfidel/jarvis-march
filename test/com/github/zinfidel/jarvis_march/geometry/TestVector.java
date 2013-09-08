@@ -12,6 +12,11 @@ public class TestVector {
 
     @Test
     public final void testVector() {
+	// Edge Cases
+	Vector zeroLength = new Vector(Point.Origin, Point.Origin);
+	assertEquals(0.0d, zeroLength.magnitude, DELTA);
+	assertEquals(zeroLength.end, zeroLength.position);
+	
 	// Test quadrant 1
 	Vector q1 = new Vector(Point.Origin, new Point(4, 3));
 	assertEquals(new Point(4, 3), q1.position);
