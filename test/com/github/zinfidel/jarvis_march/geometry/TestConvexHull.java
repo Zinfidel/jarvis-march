@@ -110,7 +110,7 @@ public class TestConvexHull {
 	basicHull.addPoint(Point11);
 	assertEquals(Point11, basicHull.getPoints().get(1));
 	assertEquals(Vector11, basicHull.getEdges().get(1));
-	assertEquals(PI / 4.0d, basicHull.getAngles().get(0), DELTA);
+	assertEquals(PI * 5.0d/4.0d, basicHull.getAngles().get(0), DELTA);
 	
 	// Add another point.
 	Point point21 = new Point(2,1);
@@ -118,6 +118,13 @@ public class TestConvexHull {
 	assertEquals(point21, basicHull.getPoints().get(2));
 	assertEquals(new Vector(Point11, point21), basicHull.getEdges().get(2));
 	assertEquals(PI * (5.0d / 4.0d), basicHull.getAngles().get(1), DELTA);
+	
+	// Add concurrent point.
+	// TODO: Fix concurrent points bug. Maybe make them illegal?
+	basicHull.addPoint(point21);
+	assertEquals(point21, basicHull.getPoints().get(3));
+	assertEquals(new Vector(point21, point21), basicHull.getEdges().get(3));
+	assertEquals(0.0d, basicHull.getAngles().get(2), DELTA);
     }
 
 }
