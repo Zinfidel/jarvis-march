@@ -117,14 +117,17 @@ public class ConvexHull {
 	return nextVector;
     }
 
+    /** @return An immutable view of the hull's points. */
     public List<Point> getPoints() {
 	return Collections.unmodifiableList(hullPoints);
     }
     
+    /** @return An immutable view of the hull's edges. */
     public List<Vector> getEdges() {
 	return Collections.unmodifiableList(hullEdges);
     }
     
+    /** @return An immutable view of the hull's angles. */
     public List<Double> getAngles() {
 	return Collections.unmodifiableList(hullAngles);
     }
