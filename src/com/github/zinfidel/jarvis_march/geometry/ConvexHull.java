@@ -10,6 +10,8 @@ public class ConvexHull {
     
     private final LinkedList<Double> hullAngles = new LinkedList<Double>();
     
+    private Point curPoint;
+    
     private Point bestPoint = null;
     
     private Vector bestVector = null;
@@ -17,6 +19,21 @@ public class ConvexHull {
     private Point nextPoint = null;
     
     private Vector nextVector = null;
+    
+    
+    /**
+     * Constructs a new convex hull with a starting point. Conventionally, the
+     * starting point should be the left-most or right-most point in the point
+     * cloud, but it is not necessary.
+     * 
+     * @param startingPoint The starting point to use. This must not be NULL or
+     * an <code>IllegalArgumentException</code> will be thrown.
+     */
+    public ConvexHull(Point startingPoint) {
+	if (startingPoint == null) throw new IllegalArgumentException(
+		"Hull starting point must not be null.");
+	this.curPoint = startingPoint;
+    }
     
     
     public Point getBestPoint() {
