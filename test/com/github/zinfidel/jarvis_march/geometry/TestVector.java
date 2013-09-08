@@ -46,28 +46,30 @@ public class TestVector {
     public final void testAngleTo() {
 	Vector vec1 = null;
 	Vector vec2 = null;
+
+	// Test right-angle (quadrant 1).
+	vec1 = new Vector(Point.Origin, new Point(1, 0));
+	vec2 = new Vector(vec1.end, new Point(1, 1));
+	assertEquals(PI / 2.0d, vec2.AngleTo(vec1), DELTA);
+	assertEquals(PI * (3.0d/2.0d), vec1.AngleTo(vec2), DELTA);
 	
-	// Test within quadrant 1, small-angle to big-angle.
-	vec1 = new Vector(Point.Origin, new Point(1, 1));
-	vec2 = new Vector(Point.Origin, new Point(0, 1));
-	assertEquals(PI / 4.0d, vec1.angleTo(vec2), DELTA);
+	// Test acute-angle (quadrant 3).
+	vec1 = new Vector(Point.Origin, new Point(-1, -1));
+	vec2 = new Vector(vec1.end, new Point(-1, 0));
+	assertEquals(PI / 4.0d, vec1.AngleTo(vec2), DELTA);
+	assertEquals(2.0d * PI - (PI / 4.0d), vec2.AngleTo(vec1), DELTA);
 	
-	// Test within quadrant 1, big-angle to small-angle.
-	vec1 = new Vector(Point.Origin, new Point(0, 1));
-	vec2 = new Vector(Point.Origin, new Point(1, 1));
-	assertEquals((2.0d * PI) - (PI / 4.0d), vec1.angleTo(vec2), DELTA);
-	
-	// Test PI difference from quadrant 1 to 3, with reversed direction.
-	vec1 = new Vector(new Point(1, 1), Point.Origin);
-	vec2 = new Vector(new Point(-1, -1), Point.Origin);
-	assertEquals(PI, vec1.angleTo(vec2), DELTA);
-	assertEquals(PI, vec2.angleTo(vec1), DELTA);
+	// Test obtuse-angle (quadrant 1 - 4).
+	vec1 = new Vector(new Point(2, -2), new Point(1, -1));
+	vec2 = new Vector(vec1.end, new Point(2, 0));
+	assertEquals(PI / 2.0d, vec1.AngleTo(vec2), DELTA);
+	assertEquals(PI * 3.0d/2.0d, vec2.AngleTo(vec1), DELTA);
 	
 	// Test concurrent lines.
 	vec1 = new Vector(Point.Origin, new Point(1, 0));
-	vec2 = new Vector(Point.Origin, new Point(1, 0));
-	assertEquals(0.0d, vec1.angleTo(vec2), DELTA);
-	assertEquals(0.0d, vec2.angleTo(vec1), DELTA);
+	vec2 = new Vector(vec1.end, Point.Origin);
+	assertEquals(0.0d, vec1.AngleTo(vec2), DELTA);
+	assertEquals(0.0d, vec2.AngleTo(vec1), DELTA);
     }
 
 }
