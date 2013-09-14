@@ -4,8 +4,6 @@ import static java.lang.Math.sqrt;
 
 /**
  * Represents a 2D point as on a Cartesian plane.
- * 
- * @author Zach Friedland
  */
 public class Point implements Comparable<Point> {
 

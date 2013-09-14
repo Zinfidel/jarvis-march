@@ -4,6 +4,11 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Defines a convex hull around a point cloud. Also stores the current best
+ * proposed point for the next point to add, as well as a point currently
+ * being assessed for being the best.
+ */
 public class ConvexHull {
 
     /** A list of points that comprise the convex hull. */

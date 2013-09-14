@@ -5,8 +5,6 @@ import static java.lang.Math.PI;
 
 /**
  * Represents a 2D vector (or line) as on a Cartesian plane.
- * 
- * @author Zach Friedland
  */
 public class Vector {
     
