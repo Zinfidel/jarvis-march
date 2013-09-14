@@ -7,7 +7,7 @@ import java.util.List;
 public class ConvexHull {
 
     /** A list of points that comprise the convex hull. */
-    private final LinkedList<Point> hullPoints = new LinkedList<Point>();
+    private final LinkedList<Point> hullPoints = new LinkedList<>();
 
     /**
      * A list of vectors that comprise the convex hull.
@@ -16,14 +16,14 @@ public class ConvexHull {
      * vector in the list would represent the vector pointing from the first
      * point and the second point in the points list.
      */
-    private final LinkedList<Vector> hullEdges = new LinkedList<Vector>();;
+    private final LinkedList<Vector> hullEdges = new LinkedList<>();;
 
     /**
      * A list of angles between the vectors that comprise the convex hull.
      * This list "mirrors" the points list in that the first angle in this list
      * is the angle located between the two vectors sharing the first point.
      */
-    private final LinkedList<Double> hullAngles = new LinkedList<Double>();
+    private final LinkedList<Double> hullAngles = new LinkedList<>();
 
     /** The current last point of the convex hull being constructed. */
     private Point curPoint;
@@ -137,13 +137,19 @@ public class ConvexHull {
      * to it, and calculates an angle for the <i>previous</i> point (as the
      * previous point now has two vectors to form an angle).
      * 
-     * Null is invalid and will throw an exception.
+     * Null points or points concurrent with the last point are invalid and
+     * will throw exceptions.
      * 
      * @param point The point to add to the end of the convex hull.
+     * @throws IllegalArgumentException if the point is null or concurrent with
+     * the last-added point.
      */
     public void addPoint(Point point) {
 	if (point == null) throw new IllegalArgumentException(
 		"Null can not be added to the convex hull points.");
+	
+	if (point.equals(curPoint)) throw new IllegalArgumentException(
+		"Concurrent points can not be added to the convex hull.");
 
 	// Add the point.
 	Point oldPoint = curPoint;

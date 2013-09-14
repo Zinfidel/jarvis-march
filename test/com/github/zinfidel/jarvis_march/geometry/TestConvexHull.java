@@ -119,11 +119,13 @@ public class TestConvexHull {
 	assertEquals(new Vector(Point11, point21), basicHull.getEdges().get(2));
 	assertEquals(PI * (5.0d / 4.0d), basicHull.getAngles().get(1), DELTA);
 	
-	// Add concurrent point.
-	basicHull.addPoint(point21);
-	assertEquals(point21, basicHull.getPoints().get(3));
-	assertEquals(new Vector(point21, point21), basicHull.getEdges().get(3));
-	assertEquals(0.0d, basicHull.getAngles().get(2), DELTA);
+	// Add concurrent point (fail case)
+	try {
+	    basicHull.addPoint(point21);
+	    Assert.fail();
+	} catch (IllegalArgumentException e) {
+	    // Exception thrown as expected.
+	}
     }
 
 }
