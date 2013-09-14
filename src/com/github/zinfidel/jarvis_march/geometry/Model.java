@@ -1,6 +1,8 @@
 package com.github.zinfidel.jarvis_march.geometry;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 // TODO: Document class
 public class Model {
@@ -24,9 +26,11 @@ public class Model {
 	if (point == null) throw new IllegalArgumentException(
 		"Null can not be added to the point cloud.");
 	
-	freePoints.add(point);
-	updateBounds(point);
-	updateLeftmost(point);
+	// If point is added (wasn't in set) update other fields.
+	if (freePoints.add(point)) {
+	    updateBounds(point);
+	    updateLeftmost(point);
+	}
     }
     
     private void updateBounds(Point point) {
@@ -47,5 +51,18 @@ public class Model {
     public void clearPoints() {
 	freePoints.clear();
 	bounds = Point.ORIGIN;
+	leftmost = MAX_BOUNDS;
+    }
+    
+    public Point getBounds() {
+	return bounds;
+    }
+    
+    public Point getLeftmost() {
+	return leftmost;
+    }
+    
+    public Set<Point> getPoints() {
+	return Collections.unmodifiableSet(freePoints);
     }
 }
