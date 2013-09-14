@@ -72,8 +72,17 @@ public class Vector {
      * 
      * @param vector The vector to calculate the angle to.
      * @return An angle in the range of [0 <= theta < 2PI].
+     * 
+     * @throws IllegalArgumentException if either vector is zero-length.
      */
     public double angleTo(Vector vector) {
+	// Can not be zero-length.
+	if (vector.magnitude == 0d) throw new IllegalArgumentException(
+		"Can not calculate angle to a zero-vector (undefined).");
+	
+	if (this.magnitude == 0d) throw new IllegalArgumentException(
+		"Can not calculate angle from a zero-vector (undefined).");
+	
 	double flippedAngle = (vector.angle + PI) % (2.0d * PI);
 	double theta = flippedAngle - this.angle;
 	

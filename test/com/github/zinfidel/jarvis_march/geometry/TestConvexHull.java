@@ -120,7 +120,6 @@ public class TestConvexHull {
 	assertEquals(PI * (5.0d / 4.0d), basicHull.getAngles().get(1), DELTA);
 	
 	// Add concurrent point.
-	// TODO: Fix concurrent points bug. Maybe make them illegal?
 	basicHull.addPoint(point21);
 	assertEquals(point21, basicHull.getPoints().get(3));
 	assertEquals(new Vector(point21, point21), basicHull.getEdges().get(3));

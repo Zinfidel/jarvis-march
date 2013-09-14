@@ -2,6 +2,7 @@ package com.github.zinfidel.jarvis_march.geometry;
 
 import static org.junit.Assert.*;
 import static java.lang.Math.*;
+import junit.framework.Assert;
 
 import org.junit.Test;
 
@@ -16,6 +17,7 @@ public class TestVector {
 	Vector zeroLength = new Vector(Point.Origin, Point.Origin);
 	assertEquals(0.0d, zeroLength.magnitude, DELTA);
 	assertEquals(zeroLength.end, zeroLength.position);
+	assertEquals(0.0d, zeroLength.angle, DELTA);
 	
 	// Test quadrant 1
 	Vector q1 = new Vector(Point.Origin, new Point(4, 3));
@@ -70,6 +72,22 @@ public class TestVector {
 	vec2 = new Vector(vec1.end, Point.Origin);
 	assertEquals(0.0d, vec1.angleTo(vec2), DELTA);
 	assertEquals(0.0d, vec2.angleTo(vec1), DELTA);
+	
+	// Test angle to zero-vector (undefined).
+	vec1 = Vector.XAxis;
+	vec2 = new Vector(Point.Origin, Point.Origin);
+	try {
+	    vec1.angleTo(vec2);
+	    Assert.fail();
+	} catch (IllegalArgumentException e) {
+	    // Exception thrown as expected.
+	}
+	try {
+	    vec2.angleTo(vec1);
+	    Assert.fail();
+	} catch (IllegalArgumentException e) {
+	    // Exception thrown as expected.
+	}
     }
 
 }
