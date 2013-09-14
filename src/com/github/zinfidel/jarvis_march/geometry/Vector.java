@@ -86,24 +86,4 @@ public class Vector {
 	
 	return (theta >= 0.0d) ? theta : ((2.0d * PI) + theta);
     }
-    
-    /** {@InheritDoc} */
-    @Override
-    public boolean equals(Object obj) {
-	// Reflexivity
-	if (obj == this) return true;
-
-	// Obj must not be null.
-	if (obj == null) return false;
-
-	// Ensure obj is a point.
-	if (!(obj instanceof Vector)) return false;
-
-	// Ensure x and y values are the same.
-	Vector vector = (Vector) obj;
-	boolean startEquals = this.start == vector.start;
-	boolean endEquals = this.end == vector.end;
-
-	return startEquals && endEquals;
-    }
 }
