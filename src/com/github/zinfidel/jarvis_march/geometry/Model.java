@@ -14,10 +14,8 @@ public class Model {
     
     private Point bounds = Point.ORIGIN;
     
-    // TODO: Max or null?
     private Point leftmost = MAX_BOUNDS;
     
-    // TODO: Null or start with a hull?
     private ConvexHull hull = null;
     
     
@@ -25,6 +23,11 @@ public class Model {
 	// Null is invalid.
 	if (point == null) throw new IllegalArgumentException(
 		"Null can not be added to the point cloud.");
+	
+	// Points must be in quadrant 1.
+	if (point.x < 0 || point.y < 0) throw new IllegalArgumentException(
+		"Only points in quadrant I (positive x and y coordinates) " +
+		"can be added to the point cloud.");
 	
 	// If point is added (wasn't in set) update other fields.
 	if (freePoints.add(point)) {
@@ -52,6 +55,7 @@ public class Model {
 	freePoints.clear();
 	bounds = Point.ORIGIN;
 	leftmost = MAX_BOUNDS;
+	hull = null;
     }
     
     public Point getBounds() {
@@ -64,5 +68,14 @@ public class Model {
     
     public Set<Point> getPoints() {
 	return Collections.unmodifiableSet(freePoints);
+    }
+    
+    public ConvexHull getHull() {
+	return hull;
+    }
+
+    public ConvexHull newHull() {
+	hull = new ConvexHull(leftmost);
+	return hull;
     }
 }
