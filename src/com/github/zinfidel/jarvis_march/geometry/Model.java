@@ -1,13 +1,19 @@
 package com.github.zinfidel.jarvis_march.geometry;
 
-import java.util.PriorityQueue;
+import java.util.HashSet;
 
 // TODO: Document class
 public class Model {
-
-    private final PriorityQueue<Point> freePoints = new PriorityQueue<>();
     
-    private Point bounds = Point.Origin;
+    private final static Point MAX_BOUNDS =
+	    new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
+
+    private final HashSet<Point> freePoints = new HashSet<>();
+    
+    private Point bounds = Point.ORIGIN;
+    
+    // TODO: Max or null?
+    private Point leftmost = MAX_BOUNDS;
     
     // TODO: Null or start with a hull?
     private ConvexHull hull = null;
@@ -20,6 +26,7 @@ public class Model {
 	
 	freePoints.add(point);
 	updateBounds(point);
+	updateLeftmost(point);
     }
     
     private void updateBounds(Point point) {
@@ -33,8 +40,12 @@ public class Model {
 	}
     }
     
+    private void updateLeftmost(Point point) {
+	if (point.x < leftmost.x) leftmost = point;
+    }
+    
     public void clearPoints() {
 	freePoints.clear();
-	bounds = Point.Origin;
+	bounds = Point.ORIGIN;
     }
 }
