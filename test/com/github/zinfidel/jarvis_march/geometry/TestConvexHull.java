@@ -12,14 +12,14 @@ public class TestConvexHull {
 
     private static final double DELTA = 0.01;
     public static final Point Point11 = new Point(1,1);
-    public static final Vector Vector11 = new Vector(Point.Origin, Point11);
+    public static final Vector Vector11 = new Vector(Point.ORIGIN, Point11);
 
     private static ConvexHull basicHull;  // Just after constructing.
 
     @Before
     public void setUp() throws Exception {
 	try {
-	    basicHull = new ConvexHull(Point.Origin);
+	    basicHull = new ConvexHull(Point.ORIGIN);
 	} catch (Exception e) {
 	    throw e;
 	}
@@ -36,9 +36,9 @@ public class TestConvexHull {
 	}
 
 	// Test regular construction.
-	ConvexHull hull = new ConvexHull(Point.Origin);
-	assertEquals(Point.Origin, hull.getPoints().get(0));
-	assertEquals(Vector.YAxis, hull.getEdges().get(0));
+	ConvexHull hull = new ConvexHull(Point.ORIGIN);
+	assertEquals(Point.ORIGIN, hull.getPoints().get(0));
+	assertEquals(Vector.Y_AXIS, hull.getEdges().get(0));
 	assertTrue(hull.getAngles().isEmpty());
     }
 

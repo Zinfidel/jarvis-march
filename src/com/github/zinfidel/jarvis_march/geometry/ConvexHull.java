@@ -63,7 +63,7 @@ public class ConvexHull {
 	curPoint = startingPoint;
 
 	// Add Y-axis as starting vector.
-	hullEdges.add(Vector.YAxis);
+	hullEdges.add(Vector.Y_AXIS);
     }
 
 

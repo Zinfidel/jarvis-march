@@ -14,13 +14,13 @@ public class TestVector {
     @Test
     public final void testVector() {
 	// Edge Cases
-	Vector zeroLength = new Vector(Point.Origin, Point.Origin);
+	Vector zeroLength = new Vector(Point.ORIGIN, Point.ORIGIN);
 	assertEquals(0.0d, zeroLength.magnitude, DELTA);
 	assertEquals(zeroLength.end, zeroLength.position);
 	assertEquals(0.0d, zeroLength.angle, DELTA);
 	
 	// Test quadrant 1
-	Vector q1 = new Vector(Point.Origin, new Point(4, 3));
+	Vector q1 = new Vector(Point.ORIGIN, new Point(4, 3));
 	assertEquals(new Point(4, 3), q1.position);
 	assertEquals(5.0d, q1.magnitude, DELTA);
 	assertEquals(atan(3.0d / 4.0d), q1.angle, DELTA);
@@ -38,7 +38,7 @@ public class TestVector {
 	assertEquals((PI + (PI / 4)), q3.angle, DELTA);
 	
 	// Test quadrant 4 with reversed position in quadrant 2
-	Vector q4 = new Vector(new Point(-1, 1), Point.Origin);
+	Vector q4 = new Vector(new Point(-1, 1), Point.ORIGIN);
 	assertEquals(new Point(1, -1), q4.position);
 	assertEquals(sqrt(2.0d), q4.magnitude, DELTA);
 	assertEquals((7.0d / 4.0d ) * PI, q4.angle, DELTA);
@@ -50,13 +50,13 @@ public class TestVector {
 	Vector vec2 = null;
 
 	// Test right-angle (quadrant 1).
-	vec1 = new Vector(Point.Origin, new Point(1, 0));
+	vec1 = new Vector(Point.ORIGIN, new Point(1, 0));
 	vec2 = new Vector(vec1.end, new Point(1, 1));
 	assertEquals(PI / 2.0d, vec2.angleTo(vec1), DELTA);
 	assertEquals(PI * (3.0d/2.0d), vec1.angleTo(vec2), DELTA);
 	
 	// Test acute-angle (quadrant 3).
-	vec1 = new Vector(Point.Origin, new Point(-1, -1));
+	vec1 = new Vector(Point.ORIGIN, new Point(-1, -1));
 	vec2 = new Vector(vec1.end, new Point(-1, 0));
 	assertEquals(PI / 4.0d, vec1.angleTo(vec2), DELTA);
 	assertEquals(2.0d * PI - (PI / 4.0d), vec2.angleTo(vec1), DELTA);
@@ -68,14 +68,14 @@ public class TestVector {
 	assertEquals(PI * 3.0d/2.0d, vec2.angleTo(vec1), DELTA);
 	
 	// Test concurrent lines.
-	vec1 = new Vector(Point.Origin, new Point(1, 0));
-	vec2 = new Vector(vec1.end, Point.Origin);
+	vec1 = new Vector(Point.ORIGIN, new Point(1, 0));
+	vec2 = new Vector(vec1.end, Point.ORIGIN);
 	assertEquals(0.0d, vec1.angleTo(vec2), DELTA);
 	assertEquals(0.0d, vec2.angleTo(vec1), DELTA);
 	
 	// Test angle to zero-vector (undefined).
-	vec1 = Vector.XAxis;
-	vec2 = new Vector(Point.Origin, Point.Origin);
+	vec1 = Vector.X_AXIS;
+	vec2 = new Vector(Point.ORIGIN, Point.ORIGIN);
 	try {
 	    vec1.angleTo(vec2);
 	    Assert.fail();

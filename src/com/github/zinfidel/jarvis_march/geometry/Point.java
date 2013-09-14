@@ -7,7 +7,7 @@ import static java.lang.Math.sqrt;
  */
 public class Point implements Comparable<Point> {
 
-    public static final Point Origin = new Point(0, 0);
+    public static final Point ORIGIN = new Point(0, 0);
 
     public final int x;
     public final int y;

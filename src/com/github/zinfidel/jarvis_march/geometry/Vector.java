@@ -9,12 +9,12 @@ import static java.lang.Math.PI;
 public class Vector {
     
     /** Unit vector representing the X-Axis. */
-    public static final Vector XAxis =
-	    new Vector(Point.Origin, new Point(1, 0));
+    public static final Vector X_AXIS =
+	    new Vector(Point.ORIGIN, new Point(1, 0));
     
     /** Unit vector representing the Y-Axis. */
-    public static final Vector YAxis = 
-	    new Vector(Point.Origin, new Point(0, 1));
+    public static final Vector Y_AXIS = 
+	    new Vector(Point.ORIGIN, new Point(0, 1));
 
     
     /** The start point (origin) of this vector. */
