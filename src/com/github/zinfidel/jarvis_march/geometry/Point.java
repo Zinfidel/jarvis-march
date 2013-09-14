@@ -5,7 +5,7 @@ import static java.lang.Math.sqrt;
 /**
  * Represents a 2D point as on a Cartesian plane.
  */
-public class Point implements Comparable<Point> {
+public class Point {
 
     public static final Point ORIGIN = new Point(0, 0);
 
@@ -44,33 +44,21 @@ public class Point implements Comparable<Point> {
 
 	return sqrt(x2 + y2);
     }
-
+    
     /**
-     * Compares the points based on their x values. If the x values are the
-     * equal, then compares the points based on their y values.
+     * This is the Cantor Pairing algorithm for 2 natural numbers. This
+     * algorithm is likely to generate values much higher than
+     * Integer.MAX_VALUE for large xs and ys, and so will wrap into negatives
+     * or positives. This weakness is not accounted for! The hashing algorithm
+     * should behave for smaller values of x and y.
      * 
-     * @param point The point to compare to.
+     * @see http://en.wikipedia.org/wiki/Pairing_function
      */
     @Override
-    public int compareTo(Point point) {
-	// Compare x values.
-	if (this.x < point.x) {
-	    return -1;
-	} else if (this.x > point.x) {
-	    return 1;
-	} else {
-	    // Compare y values if x values are equal.
-	    if (this.y < point.y) {
-		return -1;
-	    } else if (this.y > point.y) {
-		return 1;
-	    } else {
-		// Points are equal if x and y are equal.
-		return 0;
-	    }
-	}
+    public int hashCode() {
+	return (int) (0.5d * (x + y) * (x + y + 1) + y);
     }
-    
+
     /** {@InheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -82,6 +70,9 @@ public class Point implements Comparable<Point> {
 
 	// Ensure obj is a point.
 	if (!(obj instanceof Point)) return false;
+	
+	// Hashcodes must be equal.
+	if (this.hashCode() != obj.hashCode()) return false;
 
 	// Ensure x and y values are the same.
 	Point point = (Point) obj;
