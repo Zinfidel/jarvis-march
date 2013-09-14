@@ -25,8 +25,7 @@ public class TestConvexHull {
 	}
     }
 
-
-    @Test
+    @Test @SuppressWarnings("unused")
     public final void testConvexHull() {
 	// Test null exception.
 	try {
