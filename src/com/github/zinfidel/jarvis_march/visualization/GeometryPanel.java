@@ -6,6 +6,9 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
+import com.github.zinfidel.jarvis_march.geometry.Model;
+import com.github.zinfidel.jarvis_march.geometry.Point;
+
 /**
  * @author Zach Friedland
  *
@@ -13,6 +16,9 @@ import javax.swing.border.EtchedBorder;
 public class GeometryPanel extends JPanel {
 
     private static final long serialVersionUID = 5897008749918594368L;
+    
+    // TODO: TESTING CODE!
+    public Model model = null;
     
     /**
      * TODO: Document
@@ -30,7 +36,10 @@ public class GeometryPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
 	super.paintComponent(g);
-	// TODO: Loop that processes drawables.
+	// TODO: TESTING CODE!!
+	for (Point point : model.getPoints()) {
+	    GeometryDrawer.draw(point, g);
+	}
     }
 
 }

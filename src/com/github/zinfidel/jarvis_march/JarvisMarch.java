@@ -6,7 +6,7 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.LinkedList;
+import java.text.NumberFormat;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -15,7 +15,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.NumberFormatter;
 
+import com.github.zinfidel.jarvis_march.algorithm.PointGenerator;
+import com.github.zinfidel.jarvis_march.geometry.Model;
 import com.github.zinfidel.jarvis_march.geometry.Point;
 import com.github.zinfidel.jarvis_march.visualization.GeometryPanel;
 
@@ -30,9 +33,8 @@ public class JarvisMarch extends JFrame {
     private static final int height = 480;
     
     private GeometryPanel geoPanel;
-
-    // TODO: Test fields
-    private LinkedList<Point> model;
+    
+    private Model model = new Model();
 
     /**
      * TODO: Document
@@ -41,12 +43,10 @@ public class JarvisMarch extends JFrame {
 	super();
 	initGUI();
 	
-	// TODO: Currently test code
-	model = new LinkedList<Point>();
-	model.add(new Point(1,1));
-	model.add(new Point(2,1));
-	model.add(new Point(2,2));
-	model.add(new Point(1,2));
+	// TODO TESTING CODE!
+	for (int n = 0; n < 100; n++) {
+	    model.addPoint(PointGenerator.random(new Point(640, 480)));
+	}
     }
 
     /**
@@ -77,10 +77,12 @@ public class JarvisMarch extends JFrame {
 	// Set up the content frame.
 	JPanel contentFrame = (JPanel) getContentPane();
 	contentFrame.setLayout(new BorderLayout());
-	contentFrame.setBorder(new EmptyBorder(5, 5, 5, 5));
+	contentFrame.setBorder(new EmptyBorder(5, 5, 0, 5));
 
 	// Set up the geometry viewing pane.
 	GeometryPanel pnlGeometry = new GeometryPanel();
+	// TODO: TESTING CODE!
+	pnlGeometry.model = model;
 	contentFrame.add(pnlGeometry, BorderLayout.CENTER);
 	geoPanel = pnlGeometry; // Set the member variable.
 
@@ -92,12 +94,13 @@ public class JarvisMarch extends JFrame {
 	JLabel lblNumberOfPoints = new JLabel("Number of Points:");
 	pnlControls.add(lblNumberOfPoints);
 
-	JFormattedTextField ftfPoints = new JFormattedTextField();
-	ftfPoints.setColumns(3);
-	ftfPoints.setText("3");
+	JFormattedTextField ftfPoints = new JFormattedTextField(getNumFormat());
+	ftfPoints.setColumns(4);
+	ftfPoints.setValue(new Integer(4));
 	pnlControls.add(ftfPoints);
 
 	JButton btnGeneratePoints = new JButton("Generate Points");
+	btnGeneratePoints.addActionListener(new GeneratePoints(ftfPoints));
 	pnlControls.add(btnGeneratePoints);
 
 	// Set up convex hull calculate button.
@@ -118,9 +121,61 @@ public class JarvisMarch extends JFrame {
 
 	JFormattedTextField ftfDelay = new JFormattedTextField();
 	ftfDelay.setColumns(4);
+	ftfDelay.setText("100");
 	pnlControls.add(ftfDelay);
 
 	JLabel lblTimeUnits = new JLabel("ms");
 	pnlControls.add(lblTimeUnits);
     }
+    
+    
+    /*
+     * Action Listeners
+     */
+    
+    // TODO Document all the things.
+    private class GeneratePoints implements ActionListener {
+	
+	private JFormattedTextField ftfPoints;
+	
+	public GeneratePoints(JFormattedTextField ftfPoints) {
+	    this.ftfPoints = ftfPoints;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    // Clear points, establish boundaries.
+	    model.clearPoints();
+	    Point bounds = new Point(geoPanel.getWidth(),
+		                     geoPanel.getHeight());
+	    
+	    // Create the random points.
+	    for (int n = 0; n < (int) ftfPoints.getValue(); n++) {
+		model.addPoint(PointGenerator.random(bounds));
+	    }
+	    
+	    // Update the drawing.
+	    geoPanel.repaint();
+	}
+    }
+
+    /**
+     * Formatter for the integer fields that allows for 4 digits.
+     * 
+     * @return The formatter.
+     */
+    private NumberFormatter getNumFormat() {
+	// Integer format with 4 digits.
+	NumberFormat format = NumberFormat.getIntegerInstance();
+	format.setMaximumIntegerDigits(4);
+
+	// Formatter that produces integer values.
+	NumberFormatter formatter = new NumberFormatter(format);
+	formatter.setMinimum(0);
+	formatter.setMaximum(9999);
+	formatter.setValueClass(Integer.class);
+
+	return formatter;
+    }
+
 }
