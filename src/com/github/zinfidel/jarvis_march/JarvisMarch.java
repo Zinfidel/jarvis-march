@@ -29,7 +29,7 @@ import com.github.zinfidel.jarvis_march.visualization.GeometryPanel;
 public class JarvisMarch extends JFrame {
 
     private static final long serialVersionUID = -2988707585939084412L;
-    private static final int width = 640;
+    private static final int width = 640; // TODO Specify as starting width?
     private static final int height = 480;
     
     private GeometryPanel geoPanel;
@@ -42,11 +42,6 @@ public class JarvisMarch extends JFrame {
     public JarvisMarch() {
 	super();
 	initGUI();
-	
-	// TODO TESTING CODE!
-	for (int n = 0; n < 100; n++) {
-	    model.addPoint(PointGenerator.random(new Point(640, 480)));
-	}
     }
 
     /**
@@ -133,7 +128,10 @@ public class JarvisMarch extends JFrame {
      * Action Listeners
      */
     
-    // TODO Document all the things.
+    /**
+     * Generates points in the model and updates the visualization. The number
+     * of points generated is retreived from the points formatted field.
+     */
     private class GeneratePoints implements ActionListener {
 	
 	private JFormattedTextField ftfPoints;
@@ -171,7 +169,7 @@ public class JarvisMarch extends JFrame {
 
 	// Formatter that produces integer values.
 	NumberFormatter formatter = new NumberFormatter(format);
-	formatter.setMinimum(0);
+	formatter.setMinimum(3);
 	formatter.setMaximum(9999);
 	formatter.setValueClass(Integer.class);
 

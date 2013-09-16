@@ -27,7 +27,7 @@ public class GeometryPanel extends JPanel {
 	super();
 	
 	setBackground(Color.WHITE);
-	setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null)); // TODO: Does this belong here?
+	setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
     }
     
     /**
