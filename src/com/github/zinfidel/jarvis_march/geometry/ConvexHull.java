@@ -16,10 +16,8 @@ public class ConvexHull {
 
     /**
      * A list of vectors that comprise the convex hull.
-     * This list will be length(points) - 1 large, and each entry represents
-     * a vector between two points in the points list. For example, the first
-     * vector in the list would represent the vector pointing from the first
-     * point and the second point in the points list.
+     * Each vector's tail starts at the point sharing the same index and points
+     * towards the next point in the hull.
      */
     private final LinkedList<Vector> hullEdges = new LinkedList<>();;
 
@@ -29,9 +27,6 @@ public class ConvexHull {
      * is the angle located between the two vectors sharing the first point.
      */
     private final LinkedList<Double> hullAngles = new LinkedList<>();
-
-    /** The current last point of the convex hull being constructed. */
-    private Point curPoint;
 
     /** The best proposed next point. Null means there is no best point. */
     private Point bestPoint = null;
@@ -44,6 +39,12 @@ public class ConvexHull {
 
     /** The vector pointing to the next point being considered as best point. */
     private Vector nextVector = null;
+    
+    /** Indicates that the hull is a closed loop and thus solved. */
+    private boolean closed = false;
+    
+    /** The current last point of the convex hull being constructed. */
+    private Point curPoint;
 
 
     /**
@@ -155,11 +156,21 @@ public class ConvexHull {
 	
 	if (point.equals(curPoint)) throw new IllegalArgumentException(
 		"Concurrent points can not be added to the convex hull.");
+	
+	// TODO Custom exception or boolean return type?
+	if (closed) throw new RuntimeException(
+		"Points can not be added to a closed (solved) convex hull.");
 
-	// Add the point.
+	// Update new point.
 	Point oldPoint = curPoint;
 	curPoint = point;
-	hullPoints.add(point);
+	
+	// Close the hull if this is the initial point, otherwise add it.
+	if (point.equals(hullPoints.getFirst())) {
+	    closed = true;
+	} else {
+	    hullPoints.add(point);
+	}
 
 	// Generate the vector.
 	Vector oldEdge = hullEdges.peekLast();
@@ -168,6 +179,11 @@ public class ConvexHull {
 
 	// Calculate the angle.
 	hullAngles.add(newEdge.angleTo(oldEdge));
+    }
+    
+    /** @return True if the hull is closed and solved, false otherwise. */
+    public boolean isClosed() {
+	return closed;
     }
 
 }
