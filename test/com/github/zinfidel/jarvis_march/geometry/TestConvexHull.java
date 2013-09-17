@@ -129,7 +129,6 @@ public class TestConvexHull {
 
     @Test
     public final void testClosed() {
-	basicHull.addPoint(Point.ORIGIN);
 	basicHull.addPoint(new Point(1,1));
 	basicHull.addPoint(new Point(2,1));
 	basicHull.addPoint(Point.ORIGIN);
