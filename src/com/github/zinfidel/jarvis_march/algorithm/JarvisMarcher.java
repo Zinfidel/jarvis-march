@@ -1,10 +1,9 @@
 package com.github.zinfidel.jarvis_march.algorithm;
 
-import java.util.List;
-
 import com.github.zinfidel.jarvis_march.geometry.ConvexHull;
 import com.github.zinfidel.jarvis_march.geometry.Model;
 import com.github.zinfidel.jarvis_march.geometry.Point;
+import com.github.zinfidel.jarvis_march.geometry.Vector;
 
 // TODO Document me
 public class JarvisMarcher {
@@ -31,10 +30,21 @@ public class JarvisMarcher {
 	// Set up convex hull.
 	model.newHull();
 	ConvexHull hull = model.getHull();
-	List<Point> points = hull.getPoints();
 	
-	do {
+	while (!hull.isClosed()) {
+	    // TODO Set up hash list or something to keep track of points
+	    // already in hull? Linear scan through list could get very
+	    // expensive very fast, no scan could result in errors for
+	    // points in a perfect line.
+	    for (Point point : model.getPoints()) {
+		hull.setNextPoint(point);
+		Vector next = hull.getNextVector();
+		Vector best = hull.getBestVector();
+		boolean isBetter = (best == null) ? true : next.angle < best.angle;
+		if (isBetter) hull.setBestPoint(point);
+	    }
 	    
-	} while (points.get(points.size() - 1).equals(model.getLeftmost()));
+	    hull.addPoint(hull.getBestPoint());
+	}
     }
 }
