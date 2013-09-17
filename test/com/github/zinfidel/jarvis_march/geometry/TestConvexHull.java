@@ -127,4 +127,23 @@ public class TestConvexHull {
 	}
     }
 
+    @Test
+    public final void testClosed() {
+	basicHull.addPoint(Point.ORIGIN);
+	basicHull.addPoint(new Point(1,1));
+	basicHull.addPoint(new Point(2,1));
+	basicHull.addPoint(Point.ORIGIN);
+	
+	// Ensure closed is set.
+	assertTrue(basicHull.isClosed());
+	
+	// Ensure exception is thrown if we try to add more points.
+	try {
+	    basicHull.addPoint(new Point(5,5));
+	    Assert.fail();
+	} catch (Exception e) {
+	    // Exception thrown as expected.
+	}
+    }
+    
 }
