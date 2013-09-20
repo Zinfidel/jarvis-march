@@ -26,13 +26,16 @@ public class ConvexHull {
      * This list "mirrors" the points list in that the first angle in this list
      * is the angle located between the two vectors sharing the first point.
      */
-    private final LinkedList<Double> hullAngles = new LinkedList<>();
+    private final LinkedList<Angle> hullAngles = new LinkedList<>();
 
     /** The best proposed next point. Null means there is no best point. */
     private Point bestPoint = null;
 
     /** The vector pointing to the best point. Null means there is no vector.*/
     private Vector bestVector = null;
+    
+    // TODO Implement nextAngle, curAngle, getters.
+    private double bestAngle = 0d;
 
     /** The next point being considered as the best point. */
     private Point nextPoint = null;
@@ -134,7 +137,7 @@ public class ConvexHull {
     }
     
     /** @return An immutable view of the hull's angles. */
-    public List<Double> getAngles() {
+    public List<Angle> getAngles() {
 	return Collections.unmodifiableList(hullAngles);
     }
     
@@ -178,7 +181,8 @@ public class ConvexHull {
 	hullEdges.add(newEdge);
 
 	// Calculate the angle.
-	hullAngles.add(newEdge.angleTo(oldEdge));
+	double angle = newEdge.angleTo(oldEdge);
+	hullAngles.add(new Angle(angle, oldEdge.angle));
     }
     
     /** @return True if the hull is closed and solved, false otherwise. */

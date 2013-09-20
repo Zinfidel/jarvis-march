@@ -88,7 +88,7 @@ public class TestConvexHull {
 
 	// Angles
 	try {
-	    basicHull.getAngles().add(3.14d);
+	    basicHull.getAngles().add(new Angle(1d,1d));
 	    Assert.fail();
 	} catch (UnsupportedOperationException e) {
 	    // Exception thrown as expected.
@@ -109,14 +109,14 @@ public class TestConvexHull {
 	basicHull.addPoint(Point11);
 	assertEquals(Point11, basicHull.getPoints().get(1));
 	assertEquals(Vector11, basicHull.getEdges().get(1));
-	assertEquals(PI * 5.0d/4.0d, basicHull.getAngles().get(0), DELTA);
+	assertEquals(PI * 5.0d/4.0d, basicHull.getAngles().get(0).angle, DELTA);
 	
 	// Add another point.
 	Point point21 = new Point(2,1);
 	basicHull.addPoint(point21);
 	assertEquals(point21, basicHull.getPoints().get(2));
 	assertEquals(new Vector(Point11, point21), basicHull.getEdges().get(2));
-	assertEquals(PI * (5.0d / 4.0d), basicHull.getAngles().get(1), DELTA);
+	assertEquals(PI * (5.0d / 4.0d), basicHull.getAngles().get(1).angle, DELTA);
 	
 	// Add concurrent point (fail case)
 	try {
