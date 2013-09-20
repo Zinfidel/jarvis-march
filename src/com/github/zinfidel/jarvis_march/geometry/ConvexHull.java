@@ -34,8 +34,8 @@ public class ConvexHull {
     /** The vector pointing to the best point. Null means there is no vector.*/
     private Vector bestVector = null;
     
-    // TODO Implement nextAngle, curAngle, getters.
-    private double bestAngle = 0d;
+    /** The angle between the best vector and current last vector. */
+    private Angle bestAngle = null;
 
     /** The next point being considered as the best point. */
     private Point nextPoint = null;
@@ -43,11 +43,17 @@ public class ConvexHull {
     /** The vector pointing to the next point being considered as best point. */
     private Vector nextVector = null;
     
+    /** the angle between the next vector and current last vector. */
+    private Angle nextAngle = null;
+    
     /** Indicates that the hull is a closed loop and thus solved. */
     private boolean closed = false;
     
-    /** The current last point of the convex hull being constructed. */
+    /** The current last point of the convex hull. */
     private Point curPoint;
+    
+    /** The current last vector of the convex hull's edges. */
+    private Vector curVector;
 
 
     /**
@@ -98,10 +104,35 @@ public class ConvexHull {
     public Vector getBestVector() {
 	return bestVector;
     }
+    
+    /** @return The angle between the best vector and the last vector. */
+    public Angle getBestAngle() {
+	return bestAngle;
+    }
 
     /** @return The next point being considered for adding to the convex hull. */
     public Point getNextPoint() {
 	return nextPoint;
+    }
+    
+    /** @return The vector pointing to the next considered point. */
+    public Vector getNextVector() {
+	return nextVector;
+    }
+    
+    /** @return The angle from the next vector to the last current vector. */
+    public Angle getNextAngle() {
+	return nextAngle;
+    }
+    
+    /** @return The current last point on the convex hull. */
+    public Point getCurPoint() {
+	return curPoint;
+    }
+    
+    /** @return The current last vector pointing to the current last point. */
+    public Vector getCurVector() {
+	return curVector;
     }
 
     /**
@@ -119,11 +150,6 @@ public class ConvexHull {
 
 	// Calculate the new vector, or set to null if point is null.
 	nextVector = point != null ? new Vector(curPoint, nextPoint) : null;
-    }
-
-    /** @return The vector pointing to the next considered point. */
-    public Vector getNextVector() {
-	return nextVector;
     }
 
     /** @return An immutable view of the hull's points. */
