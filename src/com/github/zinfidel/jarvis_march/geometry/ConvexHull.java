@@ -73,7 +73,11 @@ public class ConvexHull {
 	curPoint = startingPoint;
 
 	// Add Y-axis as starting vector.
-	hullEdges.add(Vector.Y_AXIS);
+	// TODO Reversed direction y-axis to calc angle from common origin?
+	//hullEdges.add(Vector.Y_AXIS);
+	// Add temporary -y-axis vector as a starter, but not actually to list.
+	curVector = new Vector(Point.ORIGIN, new Point(0, -1));
+	//hullEdges.add(new Vector(Point.ORIGIN, new Point(0, -1)));
     }
 
 
@@ -97,7 +101,12 @@ public class ConvexHull {
 	bestPoint = point;
 
 	// Calculate the new best vector, or set to null if point is null.
-	bestVector = point != null ? new Vector(curPoint, bestPoint) : null;
+	bestVector = point == null ? null :
+	    new Vector(curPoint, bestPoint);
+	
+	// Calculate the new angle, or set to null if point is null.
+	bestAngle = point == null ? null :
+		new Angle(bestVector.angleTo(curVector), bestVector.angle);
     }
 
     /** @return The vector pointing to the best proposed point. */
@@ -149,7 +158,12 @@ public class ConvexHull {
 	nextPoint = point;
 
 	// Calculate the new vector, or set to null if point is null.
-	nextVector = point != null ? new Vector(curPoint, nextPoint) : null;
+	nextVector = point == null ? null :
+	    new Vector(curPoint, nextPoint);
+	
+	// Calculate the new angle, or set to null if point is null.
+	nextAngle = point == null ? null :
+	    new Angle(nextVector.angleTo(curVector), nextVector.angle);
     }
 
     /** @return An immutable view of the hull's points. */
@@ -202,7 +216,7 @@ public class ConvexHull {
 	}
 
 	// Generate the vector.
-	Vector oldEdge = hullEdges.peekLast();
+	Vector oldEdge = getCurVector();
 	Vector newEdge = new Vector(oldPoint, point);
 	hullEdges.add(newEdge);
 

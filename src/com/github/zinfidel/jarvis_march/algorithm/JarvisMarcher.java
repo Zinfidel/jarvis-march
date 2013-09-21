@@ -37,14 +37,26 @@ public class JarvisMarcher {
 	    // expensive very fast, no scan could result in errors for
 	    // points in a perfect line.
 	    for (Point point : model.getPoints()) {
-		hull.setNextPoint(point);
-		Vector next = hull.getNextVector();
-		Vector best = hull.getBestVector();
-		boolean isBetter = (best == null) ? true : next.angle < best.angle;
-		if (isBetter) hull.setBestPoint(point);
+		if (!point.equals(hull.getCurPoint())) {
+		    hull.setNextPoint(point);
+		    Vector next = hull.getNextVector();
+		    Vector best = hull.getBestVector();
+
+		    // TODO LOGIC ERROR need to add current point/vector to the hull
+		    // so that angle can be referenced against it in calcs.
+		    //boolean isBetter = (best == null) ? true : next.angle < best.angle;
+		    boolean isBetter = (best == null) ? true :
+			hull.getNextAngle().angle < hull.getBestAngle().angle;
+		    if (isBetter) hull.setBestPoint(point);
+		   //System.out.println(hull.getNextAngle().angle);
+		    //System.out.println(hull.getBestAngle().angle);
+		    //System.out.println("Best Point: " + hull.getBestPoint());
+		}
 	    }
-	    
+	    //System.out.println(hull.getBestPoint());
 	    hull.addPoint(hull.getBestPoint());
+	    hull.setNextPoint(null);
+	    hull.setBestPoint(null);
 	}
     }
 }
