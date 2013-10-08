@@ -162,11 +162,11 @@ public class JarvisMarch extends JFrame {
     // TODO Document
     private class CalculateCH implements ActionListener {
 
+	// TODO: Gray out option if no points on screen.
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    JarvisMarcher marcher = new JarvisMarcher();
-	    //marcher.solve(model);
-	    while (marcher.iterate(model));
+	    JarvisMarcher marcher = new JarvisMarcher(model);
+	    while (marcher.iterate());
 	    geoPanel.repaint();
 	}
     }

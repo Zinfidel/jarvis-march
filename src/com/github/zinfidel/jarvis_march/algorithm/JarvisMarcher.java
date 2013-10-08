@@ -1,18 +1,24 @@
 package com.github.zinfidel.jarvis_march.algorithm;
 
-import java.util.Set;
+import java.util.Iterator;
 
-import com.github.zinfidel.jarvis_march.geometry.Angle;
-import com.github.zinfidel.jarvis_march.geometry.ConvexHull;
-import com.github.zinfidel.jarvis_march.geometry.Model;
-import com.github.zinfidel.jarvis_march.geometry.Point;
-import com.github.zinfidel.jarvis_march.geometry.Vector;
+import com.github.zinfidel.jarvis_march.geometry.*;
 
 // TODO Document me
 public class JarvisMarcher {
+    
+    /** The model that the marcher is currently operating on. */
+    private Model model = null;
       
     /** The convex hull that the marcher is currently constructing. */
     private ConvexHull hull = null;
+    
+    /**
+     * Iterates over the set of points in the model in between invocations
+     * of the iteration method. This retains the "position" in the algorithm
+     * between point selections.
+     */
+    private Iterator<Point> pointIterator = null;
     
     /** The best proposed next point. Null means there is no best point. */
     private Point bestPoint = null;
@@ -31,6 +37,12 @@ public class JarvisMarcher {
     
     /** The angle between the next vector and current last vector. */
     private Angle nextAngle = null;
+    
+    
+    /** Constructs a marcher for the given model. */
+    public JarvisMarcher(Model model) {
+	this.model = model;
+    }
 
    
     /**
@@ -38,72 +50,51 @@ public class JarvisMarcher {
      * JarvisMarch object. This can solve for a brand new convex hull or
      * for a partially completed hull.
      * 
-     * @throws DegenerateGeometryException if the model has < 3 points.
+     * @throws DegenerateGeometryException if no valid best point can be found.
+     * @see com.github.zinfidel.jarvis_march.algorithm.iterate
+     */
+    public void solve() {
+
+	// Iterate until we get false back, CH is solved then.
+	while (iterate());
+    }
+        
+    /**
+     * Solves one atomic "unit" of the Jarvis' March algorithm on the current
+     * model. This can simply update the next-best point/vector/angle, update
+     * the current best point/vector/angle, or complete the convex hull and
+     * close it.
+     * 
+     * @return false if there is more iteration to be done, true if finished.
      * @throws DegenerateGeometryException if no valid best point can be found.
      */
-    public void solve(Model model) {
-
-	// Get the point cloud, ensure it is not degenerate for a CH.
-	Set<Point> points = model.getPoints();
-	if (points.size() < 3) throw new DegenerateGeometryException(
-		"Degenerate geometry detected: Less than 3 vertices.");
+    public boolean iterate() {
 	
-	// Start solving - go until the hull is closed.
-	hull = model.newHull();
-	while (!hull.isClosed()) {
-
-	    for (Point point : points) {
-		
-		// Don't consider the current point, can cause problems.
-		if (point != hull.getCurPoint()) {
-		    
-		    setNextPoint(point);
-		    
-		    // If the point's angle is valid (>= 180deg), and its better
-		    // than the current best point's angle, set it as best.
-		    if (nextAngle.angle >= Math.PI ) {
-			
-			if (bestPoint == null || nextAngle.angle < bestAngle.angle) {
-			    setBestPoint(point);
-			}
-		    }
-		}
-	    }
-	    
-	    // If we don't have a best point, something went wrong.
-	    if (bestPoint == null) throw new DegenerateGeometryException(
-	        "No valid point was found to add - probably degenerate geometry.");
-	    
-	    // Add the best point to the hull, then clear the algorithm state
-	    // for the next iteration.
-	    hull.addPoint(bestPoint);
-	    setNextPoint(null);
-	    setBestPoint(null);
+	/*
+	 * Deal with setting up the hull. If there isn't one, set up a new one
+	 * in the model. If it exists, check if it's closed, and if so, return
+	 * false to indicate that no more iteration is necessary. Finally, if
+	 * none of the above, just use whatever hull is present.
+	 */
+	if (hull == null) {
+	    hull = model.newHull();
+	} else if (hull.isClosed()) {
+	    return false;
 	}
-    }
-    
-    // TODO: Document me.
-    public boolean iterate(Model model) {
+
+	// Set up a point iterator if need be.
+	if (pointIterator == null) pointIterator = model.getPoints().iterator();
 	
-	// TODO: This is going to create tons of temporary immutable
-	//       wrappers. Implement singletons or what to fix this?
-	// Get the point cloud, ensure it is not degenerate for a CH.
-	Set<Point> points = model.getPoints();
-	if (points.size() < 3) throw new DegenerateGeometryException(
-		"Degenerate geometry detected: Less than 3 vertices.");
+	/*
+	 * Deal with getting the next point. If there are points left, set up
+	 * as the next point and determine if it's the best. If there are no more
+	 * points left, add the point to the hull and perform clean-up/reset.
+	 */
+	if (pointIterator.hasNext()) {
+	    Point point = pointIterator.next();
 
-	// Shadowed the hull field - get the hull/a new hull. If it is closed,
-	// return false to indicate that iteration is complete.
-	// TODO: Uncomment and separate hull into parameter?
-	//ConvexHull hull = model.getHull();
-	hull = model.getHull();
-	if (hull == null) hull = model.newHull();
-	if (hull.isClosed()) return false;
-
-	// Solve one iteration of the algorithm.
-	for (Point point : points) {
-
-	    // Don't consider the current point, can cause problems.
+	    // Don't consider the current hull point - can cause problems.
+	    // See Vector.angleTo() for more details on this.
 	    if (point != hull.getCurPoint()) {
 
 		setNextPoint(point);
@@ -117,22 +108,25 @@ public class JarvisMarcher {
 		    }
 		}
 	    }
+	    
+	} else {
+
+	    // If we don't have a best point, something went wrong.
+	    if (bestPoint == null) throw new DegenerateGeometryException(
+		    "No valid point was found to add - probably degenerate geometry.");
+
+	    // Add the best point to the hull, then clear the algorithm state
+	    // for the next iteration.
+	    hull.addPoint(bestPoint);
+	    setNextPoint(null);
+	    setBestPoint(null);
+	    pointIterator = null;
 	}
 
-	// If we don't have a best point, something went wrong.
-	if (bestPoint == null) throw new DegenerateGeometryException(
-		"No valid point was found to add - probably degenerate geometry.");
-
-	// Add the best point to the hull, then clear the algorithm state
-	// for the next iteration.
-	hull.addPoint(bestPoint);
-	setNextPoint(null);
-	setBestPoint(null);
-	
 	// Return false if iteration is done, true if there is more left to do.
 	return hull.isClosed() ? false : true;
     }
-        
+
     /**
      * Sets the best proposed point for the next point in the hull.
      * Automatically updates the best vector to point to it. Note that this

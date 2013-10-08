@@ -46,8 +46,8 @@ public class TestJarvisMarcher {
 	model.addPoint(point40);
 	
 	// Run the algorithm.
-	JarvisMarcher marcher = new JarvisMarcher();
-	marcher.solve(model);
+	JarvisMarcher marcher = new JarvisMarcher(model);
+	marcher.solve();
 	ConvexHull hull = model.getHull();
 	
 	// Test for closedness.
@@ -65,7 +65,7 @@ public class TestJarvisMarcher {
     public final void testSetBestPoint() {
 	// Set up model with origin point and marcher.
 	model.addPoint(Point.ORIGIN);
-	JarvisMarcher marcher = new JarvisMarcher();
+	JarvisMarcher marcher = new JarvisMarcher(model);
 	
 	// Set regular point.
 	marcher.setBestPoint(Point11);
@@ -82,7 +82,7 @@ public class TestJarvisMarcher {
     public final void testSetNextPoint() {
 	// Set up model with origin point and marcher.
 	model.addPoint(Point.ORIGIN);
-	JarvisMarcher marcher = new JarvisMarcher();
+	JarvisMarcher marcher = new JarvisMarcher(model);
 	
 	// Set regular point.
 	marcher.setNextPoint(Point11);
@@ -109,8 +109,8 @@ public class TestJarvisMarcher {
 	
 	// Run the algorithm and check for degenerate exception.
 	try {
-	    JarvisMarcher marcher = new JarvisMarcher();
-	    marcher.solve(model);
+	    JarvisMarcher marcher = new JarvisMarcher(model);
+	    marcher.solve();
 	    Assert.fail();
 	} catch (DegenerateGeometryException e) {
 	    // Caught as expected.
@@ -129,8 +129,8 @@ public class TestJarvisMarcher {
 	
 	// Try to solve - catch exception because of too few points.
 	try {
-	    JarvisMarcher marcher = new JarvisMarcher();
-	    marcher.solve(model);
+	    JarvisMarcher marcher = new JarvisMarcher(model);
+	    marcher.solve();
 	    Assert.fail();
 	} catch (DegenerateGeometryException e) {
 	    // Caught as expected.
