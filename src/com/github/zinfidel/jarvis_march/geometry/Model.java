@@ -90,6 +90,8 @@ public class Model {
     public void clearPoints() {
 	freePoints.clear();
 	bounds = Point.ORIGIN;
+	// TODO Really should remove default leftmost and leave null,
+	// throw exceptions if hull is installed to model with no points.
 	leftmost = MAX_BOUNDS;
 	hull = null;
     }

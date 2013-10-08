@@ -1,5 +1,8 @@
 package com.github.zinfidel.jarvis_march.algorithm;
 
+import java.util.Set;
+
+import com.github.zinfidel.jarvis_march.geometry.Angle;
 import com.github.zinfidel.jarvis_march.geometry.ConvexHull;
 import com.github.zinfidel.jarvis_march.geometry.Model;
 import com.github.zinfidel.jarvis_march.geometry.Point;
@@ -7,56 +10,156 @@ import com.github.zinfidel.jarvis_march.geometry.Vector;
 
 // TODO Document me
 public class JarvisMarcher {
+    
+    /** The model that the marcher is currently operating on. */
+    private Model model = null;
+    
+    /** The convex hull that the marcher is current constructing. */
+    private ConvexHull hull = null;
+    
+    /** The best proposed next point. Null means there is no best point. */
+    private Point bestPoint = null;
 
-    // TODO Provide implementations for solving all at once and for iterating
-    //      through a solution.
+    /** The vector pointing to the best point. Null means there is no vector.*/
+    private Vector bestVector = null;
     
-    //private Model model;
+    /** The angle between the best vector and current last vector. */
+    private Angle bestAngle = null;
+
+    /** The next point being considered as the best point. */
+    private Point nextPoint = null;
+
+    /** The vector pointing to the next point being considered as best point. */
+    private Vector nextVector = null;
     
-    //public JarvisMarcher(Model model) {
-    //	this.model = model;
-    //}
-    
-    // TODO Static or not?
-    public static void solve(Model model) {
-	// TODO Initial implementation of algorithm.
-	// TODO Should be calling an iterate method when available.
-	// TODO Assuming completely unsolved - should be more robust?
+    /** The angle between the next vector and current last vector. */
+    private Angle nextAngle = null;
+
+   
+    /**
+     * Constructs a Jarvis Marcher operating on a given model.
+     * 
+     * @param model The model to operate on.
+     */
+    public JarvisMarcher(Model model) {
+	this.model = model;
+	this.hull = model.newHull();
+    }
+
+    /**
+     * Solves the convex hull problem for the model associated with this
+     * JarvisMarch object. This can solve for a brand new convex hull or
+     * for a partially completed hull.
+     */
+    public void solve() {
+
+	// Get the point cloud, ensure it is not degenerate for a CH.
+	Set<Point> points = model.getPoints();
+	if (points.size() < 3) throw new DegenerateGeometryException(
+		"Degenerate geometry detected: Less than 3 vertices.");
 	
-	// TODO Throw custom exception? Normal runtime exception?
-	// Degenerate case.
-	if (model.getPoints().size() < 3) return;
-	
-	// Set up convex hull.
-	model.newHull();
-	ConvexHull hull = model.getHull();
-	
+	// Start solving - go until the hull is closed.
 	while (!hull.isClosed()) {
-	    // TODO Set up hash list or something to keep track of points
-	    // already in hull? Linear scan through list could get very
-	    // expensive very fast, no scan could result in errors for
-	    // points in a perfect line.
-	    for (Point point : model.getPoints()) {
-		if (!point.equals(hull.getCurPoint())) {
-		    hull.setNextPoint(point);
-		    Vector next = hull.getNextVector();
-		    Vector best = hull.getBestVector();
 
-		    // TODO LOGIC ERROR need to add current point/vector to the hull
-		    // so that angle can be referenced against it in calcs.
-		    //boolean isBetter = (best == null) ? true : next.angle < best.angle;
-		    boolean isBetter = (best == null) ? true :
-			hull.getNextAngle().angle < hull.getBestAngle().angle;
-		    if (isBetter) hull.setBestPoint(point);
-		   //System.out.println(hull.getNextAngle().angle);
-		    //System.out.println(hull.getBestAngle().angle);
-		    //System.out.println("Best Point: " + hull.getBestPoint());
+	    for (Point point : points) {
+		
+		// Don't consider the current point, can cause problems.
+		if (point != hull.getCurPoint()) {
+		    
+		    setNextPoint(point);
+		    
+		    // If the point's angle is valid (>= 180deg), and its better
+		    // than the current best point's angle, set it as best.
+		    if (nextAngle.angle >= Math.PI ) {
+			
+			if (bestPoint == null || nextAngle.angle < bestAngle.angle) {
+			    setBestPoint(point);
+			}
+		    }
 		}
 	    }
-	    //System.out.println(hull.getBestPoint());
-	    hull.addPoint(hull.getBestPoint());
-	    hull.setNextPoint(null);
-	    hull.setBestPoint(null);
+	    
+	    // If we don't have a best point, something went wrong.
+	    if (bestPoint == null) throw new DegenerateGeometryException(
+	        "No valid point was found to add - probably degenerate geometry");
+	    
+	    // Add the best point to the hull, then clear the algorithm state
+	    // for the next iteration.
+	    hull.addPoint(bestPoint);
+	    setNextPoint(null);
+	    setBestPoint(null);
 	}
+    }
+    
+    /**
+     * Sets the best proposed point for the next point in the hull.
+     * Automatically updates the best vector to point to it. Note that this
+     * accessor does not scrutinize the input, so stuff like concurrent points
+     * will be accepted.
+     * 
+     * Passing null to this method will "erase" the best point and vector.
+     * 
+     * @param point The new best proposed point, or null.
+     */
+    public void setBestPoint(Point point) {
+	bestPoint = point;
+	Point curPoint = hull.getCurPoint();
+	Vector curVector = hull.getCurVector();
+
+	// Calculate the new best vector, or set to null if point is null.
+	bestVector = point == null ? null :
+	    new Vector(curPoint, bestPoint);
+	
+	// Calculate the new angle, or set to null if point is null.
+	bestAngle = point == null ? null :
+	    new Angle(bestVector.angleTo(curVector),
+		      bestVector.angle,
+		      curPoint);
+    }
+    
+    /** @return The current best point. */
+    public Point getBestPoint() {
+	return bestPoint;
+    }
+       
+    /** @return The current best vector. */
+    public Vector getBestVector() {
+	return bestVector;
+    }
+  
+    /**
+     * Sets the point being considered for the next point in the hull.
+     * Automatically updates the next vector to point to it. Note that this
+     * accessor does not scrutinize the input, so stuff like concurrent points
+     * will be accepted.
+     * 
+     * Passing null to this method will "erase" the next point and vector.
+     * 
+     * @param point The next proposed point, or null.
+     */
+    public void setNextPoint(Point point) {
+	nextPoint = point;
+	Point curPoint = hull.getCurPoint();
+	Vector curVector = hull.getCurVector();
+
+	// Calculate the new vector, or set to null if point is null.
+	nextVector = point == null ? null :
+	    new Vector(curPoint, nextPoint);
+	
+	// Calculate the new angle, or set to null if point is null.
+	nextAngle = point == null ? null :
+	    new Angle(nextVector.angleTo(curVector),
+		      nextVector.angle,
+		      curPoint);
+    }
+    
+    /** @return The current point being considered for best point. */
+    public Point getNextPoint() {
+	return nextPoint;
+    }
+    
+    /** @return The current vector being considered for best vector. */
+    public Vector getNextVector() {
+	return nextVector;
     }
 }

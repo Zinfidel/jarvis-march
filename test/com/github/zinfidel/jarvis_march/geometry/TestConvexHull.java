@@ -38,34 +38,8 @@ public class TestConvexHull {
 	// Test regular construction.
 	ConvexHull hull = new ConvexHull(Point.ORIGIN);
 	assertEquals(Point.ORIGIN, hull.getPoints().get(0));
-	assertEquals(Vector.Y_AXIS, hull.getEdges().get(0));
+	assertEquals(Vector.Y_AXIS, hull.getCurVector());
 	assertTrue(hull.getAngles().isEmpty());
-    }
-
-    @Test
-    public final void testSetBestPoint() {
-	// Set regular point.
-	basicHull.setBestPoint(Point11);
-	assertEquals(Point11, basicHull.getBestPoint());
-	assertEquals(Vector11, basicHull.getBestVector());
-
-	// Test null point (erasure).
-	basicHull.setBestPoint(null);
-	assertNull(basicHull.getBestPoint());
-	assertNull(basicHull.getBestVector());
-    }
-
-    @Test
-    public final void testSetNextPoint() {
-	// Set regular point.
-	basicHull.setNextPoint(Point11);
-	assertEquals(Point11, basicHull.getNextPoint());
-	assertEquals(Vector11, basicHull.getNextVector());
-
-	// Test null point (erasure).
-	basicHull.setNextPoint(null);
-	assertNull(basicHull.getNextPoint());
-	assertNull(basicHull.getNextVector());
     }
 
     @Test
@@ -88,7 +62,7 @@ public class TestConvexHull {
 
 	// Angles
 	try {
-	    basicHull.getAngles().add(new Angle(1d,1d));
+	    basicHull.getAngles().add(new Angle(1d,1d,Point.ORIGIN));
 	    Assert.fail();
 	} catch (UnsupportedOperationException e) {
 	    // Exception thrown as expected.
@@ -107,15 +81,21 @@ public class TestConvexHull {
 	
 	// Test add to just-initialized hull.
 	basicHull.addPoint(Point11);
+	assertEquals(Point11, basicHull.getCurPoint());
 	assertEquals(Point11, basicHull.getPoints().get(1));
-	assertEquals(Vector11, basicHull.getEdges().get(1));
-	assertEquals(PI * 5.0d/4.0d, basicHull.getAngles().get(0).angle, DELTA);
+	assertEquals(Vector11, basicHull.getCurVector());
+	assertEquals(Vector11, basicHull.getEdges().get(0));
+	Angle actAngle = basicHull.getAngles().get(0);
+	Angle expAngle = new Angle(PI + PI/4d, PI/4d, Point.ORIGIN);
+	assertEquals(expAngle.angle, actAngle.angle, DELTA);
+	assertEquals(expAngle.start, actAngle.start, DELTA);
+	assertEquals(expAngle.center, actAngle.center);
 	
 	// Add another point.
 	Point point21 = new Point(2,1);
 	basicHull.addPoint(point21);
 	assertEquals(point21, basicHull.getPoints().get(2));
-	assertEquals(new Vector(Point11, point21), basicHull.getEdges().get(2));
+	assertEquals(new Vector(Point11, point21), basicHull.getEdges().get(1));
 	assertEquals(PI * (5.0d / 4.0d), basicHull.getAngles().get(1).angle, DELTA);
 	
 	// Add concurrent point (fail case)

@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.NumberFormatter;
 
+import com.github.zinfidel.jarvis_march.algorithm.JarvisMarcher;
 import com.github.zinfidel.jarvis_march.algorithm.PointGenerator;
 import com.github.zinfidel.jarvis_march.geometry.Model;
 import com.github.zinfidel.jarvis_march.geometry.Point;
@@ -100,6 +101,7 @@ public class JarvisMarch extends JFrame {
 
 	// Set up convex hull calculate button.
 	JButton btnCalculateCH = new JButton("Calculate CH");
+	btnCalculateCH.addActionListener(new CalculateCH());
 	pnlControls.add(btnCalculateCH);
 
 	// Set up the iterate button.
@@ -156,6 +158,21 @@ public class JarvisMarch extends JFrame {
 	    geoPanel.repaint();
 	}
     }
+    
+    // TODO Document
+    private class CalculateCH implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    JarvisMarcher marcher = new JarvisMarcher(model);
+	    marcher.solve();
+	    geoPanel.repaint();
+	}
+    }
+        
+    /*
+     * Utility
+     */
 
     /**
      * Formatter for the integer fields that allows for 4 digits.

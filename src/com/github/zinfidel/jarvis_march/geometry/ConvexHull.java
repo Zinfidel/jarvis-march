@@ -27,24 +27,6 @@ public class ConvexHull {
      * is the angle located between the two vectors sharing the first point.
      */
     private final LinkedList<Angle> hullAngles = new LinkedList<>();
-
-    /** The best proposed next point. Null means there is no best point. */
-    private Point bestPoint = null;
-
-    /** The vector pointing to the best point. Null means there is no vector.*/
-    private Vector bestVector = null;
-    
-    /** The angle between the best vector and current last vector. */
-    private Angle bestAngle = null;
-
-    /** The next point being considered as the best point. */
-    private Point nextPoint = null;
-
-    /** The vector pointing to the next point being considered as best point. */
-    private Vector nextVector = null;
-    
-    /** the angle between the next vector and current last vector. */
-    private Angle nextAngle = null;
     
     /** Indicates that the hull is a closed loop and thus solved. */
     private boolean closed = false;
@@ -59,7 +41,12 @@ public class ConvexHull {
     /**
      * Constructs a new convex hull with a starting point. Conventionally, the
      * starting point should be the left-most or right-most point in the point
-     * cloud, but it is not necessary.
+     * cloud.
+     * 
+     * Note that the convex hull is constructed in a unique state - it has its
+     * current vector set to the positive Y-Axis, but the vector is not actually
+     * part of its edge list. This is so that points being considered can be
+     * measured against the Y-Axis for angles.
      * 
      * @param startingPoint The starting point to use. This must not be NULL or
      * an <code>IllegalArgumentException</code> will be thrown.
@@ -72,68 +59,10 @@ public class ConvexHull {
 	hullPoints.add(startingPoint);
 	curPoint = startingPoint;
 
-	// Add Y-axis as starting vector.
-	// TODO Reversed direction y-axis to calc angle from common origin?
-	//hullEdges.add(Vector.Y_AXIS);
-	// Add temporary -y-axis vector as a starter, but not actually to list.
-	curVector = new Vector(Point.ORIGIN, new Point(0, -1));
-	//hullEdges.add(new Vector(Point.ORIGIN, new Point(0, -1)));
+	// Add temporary Y-Axis for the initial add.
+	curVector = Vector.Y_AXIS;
     }
 
-
-    /** @return The best proposed point. */
-    public Point getBestPoint() {
-	return bestPoint;
-    }
-
-    /**
-     * Sets the best proposed point for the next point in the hull.
-     * Automatically updates the best vector to point to it. Note that this
-     * accessor does not scrutinize the input, so stuff like concurrent points
-     * will be accepted.
-     * 
-     * Passing null to this method will "erase" the best point and vector.
-     * 
-     * @param point The new best proposed point, or null.
-     */
-    public void setBestPoint(Point point) {
-
-	bestPoint = point;
-
-	// Calculate the new best vector, or set to null if point is null.
-	bestVector = point == null ? null :
-	    new Vector(curPoint, bestPoint);
-	
-	// Calculate the new angle, or set to null if point is null.
-	bestAngle = point == null ? null :
-		new Angle(bestVector.angleTo(curVector), bestVector.angle);
-    }
-
-    /** @return The vector pointing to the best proposed point. */
-    public Vector getBestVector() {
-	return bestVector;
-    }
-    
-    /** @return The angle between the best vector and the last vector. */
-    public Angle getBestAngle() {
-	return bestAngle;
-    }
-
-    /** @return The next point being considered for adding to the convex hull. */
-    public Point getNextPoint() {
-	return nextPoint;
-    }
-    
-    /** @return The vector pointing to the next considered point. */
-    public Vector getNextVector() {
-	return nextVector;
-    }
-    
-    /** @return The angle from the next vector to the last current vector. */
-    public Angle getNextAngle() {
-	return nextAngle;
-    }
-    
     /** @return The current last point on the convex hull. */
     public Point getCurPoint() {
 	return curPoint;
@@ -142,28 +71,6 @@ public class ConvexHull {
     /** @return The current last vector pointing to the current last point. */
     public Vector getCurVector() {
 	return curVector;
-    }
-
-    /**
-     * Sets the point being considered for the next point in the hull.
-     * Automatically updates the next vector to point to it. Note that this
-     * accessor does not scrutinize the input, so stuff like concurrent points
-     * will be accepted.
-     * 
-     * Passing null to this method will "erase" the next point and vector.
-     * 
-     * @param point The next proposed point, or null.
-     */
-    public void setNextPoint(Point point) {
-	nextPoint = point;
-
-	// Calculate the new vector, or set to null if point is null.
-	nextVector = point == null ? null :
-	    new Vector(curPoint, nextPoint);
-	
-	// Calculate the new angle, or set to null if point is null.
-	nextAngle = point == null ? null :
-	    new Angle(nextVector.angleTo(curVector), nextVector.angle);
     }
 
     /** @return An immutable view of the hull's points. */
@@ -200,7 +107,6 @@ public class ConvexHull {
 	if (point.equals(curPoint)) throw new IllegalArgumentException(
 		"Concurrent points can not be added to the convex hull.");
 	
-	// TODO Custom exception or boolean return type?
 	if (closed) throw new RuntimeException(
 		"Points can not be added to a closed (solved) convex hull.");
 
@@ -216,13 +122,13 @@ public class ConvexHull {
 	}
 
 	// Generate the vector.
-	Vector oldEdge = getCurVector();
-	Vector newEdge = new Vector(oldPoint, point);
-	hullEdges.add(newEdge);
+	Vector oldVector = curVector;
+	curVector = new Vector(oldPoint, point);
+	hullEdges.add(curVector);
 
 	// Calculate the angle.
-	double angle = newEdge.angleTo(oldEdge);
-	hullAngles.add(new Angle(angle, oldEdge.angle));
+	double angle = curVector.angleTo(oldVector);
+	hullAngles.add(new Angle(angle, curVector.angle, oldPoint));
     }
     
     /** @return True if the hull is closed and solved, false otherwise. */
