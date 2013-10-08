@@ -11,7 +11,7 @@ import com.github.zinfidel.jarvis_march.geometry.Vector;
 // TODO Document me
 public class JarvisMarcher {
       
-    /** The convex hull that the marcher is current constructing. */
+    /** The convex hull that the marcher is currently constructing. */
     private ConvexHull hull = null;
     
     /** The best proposed next point. Null means there is no best point. */
@@ -37,6 +37,9 @@ public class JarvisMarcher {
      * Solves the convex hull problem for the model associated with this
      * JarvisMarch object. This can solve for a brand new convex hull or
      * for a partially completed hull.
+     * 
+     * @throws DegenerateGeometryException if the model has < 3 points.
+     * @throws DegenerateGeometryException if no valid best point can be found.
      */
     public void solve(Model model) {
 
@@ -46,7 +49,7 @@ public class JarvisMarcher {
 		"Degenerate geometry detected: Less than 3 vertices.");
 	
 	// Start solving - go until the hull is closed.
-	ConvexHull hull = model.newHull();
+	hull = model.newHull();
 	while (!hull.isClosed()) {
 
 	    for (Point point : points) {
@@ -80,11 +83,54 @@ public class JarvisMarcher {
     }
     
     // TODO: Document me.
-    public boolean iterate() {
+    public boolean iterate(Model model) {
 	
+	// TODO: This is going to create tons of temporary immutable
+	//       wrappers. Implement singletons or what to fix this?
+	// Get the point cloud, ensure it is not degenerate for a CH.
+	Set<Point> points = model.getPoints();
+	if (points.size() < 3) throw new DegenerateGeometryException(
+		"Degenerate geometry detected: Less than 3 vertices.");
+
+	// Shadowed the hull field - get the hull/a new hull. If it is closed,
+	// return false to indicate that iteration is complete.
+	// TODO: Uncomment and separate hull into parameter?
+	//ConvexHull hull = model.getHull();
+	hull = model.getHull();
+	if (hull == null) hull = model.newHull();
+	if (hull.isClosed()) return false;
+
+	// Solve one iteration of the algorithm.
+	for (Point point : points) {
+
+	    // Don't consider the current point, can cause problems.
+	    if (point != hull.getCurPoint()) {
+
+		setNextPoint(point);
+
+		// If the point's angle is valid (>= 180deg), and its better
+		// than the current best point's angle, set it as best.
+		if (nextAngle.angle >= Math.PI ) {
+
+		    if (bestPoint == null || nextAngle.angle < bestAngle.angle) {
+			setBestPoint(point);
+		    }
+		}
+	    }
+	}
+
+	// If we don't have a best point, something went wrong.
+	if (bestPoint == null) throw new DegenerateGeometryException(
+		"No valid point was found to add - probably degenerate geometry.");
+
+	// Add the best point to the hull, then clear the algorithm state
+	// for the next iteration.
+	hull.addPoint(bestPoint);
+	setNextPoint(null);
+	setBestPoint(null);
 	
-	
-	return false;
+	// Return false if iteration is done, true if there is more left to do.
+	return hull.isClosed() ? false : true;
     }
         
     /**
