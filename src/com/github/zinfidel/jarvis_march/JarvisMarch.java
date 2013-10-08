@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.NumberFormatter;
+import javax.swing.Timer;
 
 import com.github.zinfidel.jarvis_march.algorithm.JarvisMarcher;
 import com.github.zinfidel.jarvis_march.algorithm.PointGenerator;
@@ -106,10 +107,7 @@ public class JarvisMarch extends JFrame {
 
 	// Set up the iterate button.
 	JButton btnIterate = new JButton("Iterate");
-	btnIterate.addActionListener(new ActionListener() {
-	    public void actionPerformed(ActionEvent arg0) {
-	    }
-	});
+	btnIterate.addActionListener(new IterativelyCalculateCH());
 	pnlControls.add(btnIterate);
 
 	// Set up the auto-run checkbox, delay field, and time units label.
@@ -166,9 +164,34 @@ public class JarvisMarch extends JFrame {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 	    JarvisMarcher marcher = new JarvisMarcher(model);
-	    while (marcher.iterate());
+	    marcher.solve();
 	    geoPanel.repaint();
 	}
+    }
+    
+    // TODO: This all probably needs to be reimplemented in some background way.
+    private class IterativelyCalculateCH implements ActionListener {
+	
+	private JarvisMarcher marcher = null;
+	Timer timer = null;
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    
+	    marcher = new JarvisMarcher(model);
+	    geoPanel.marcher = marcher;
+
+	    timer = new Timer(25, new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+		    if (!marcher.iterate()) timer.stop();
+		    geoPanel.repaint();
+		}    
+	    });
+	    
+	    timer.start();
+
+	}
+	
     }
         
     /*

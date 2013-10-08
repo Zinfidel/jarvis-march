@@ -10,6 +10,7 @@ import java.awt.Stroke;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
+import com.github.zinfidel.jarvis_march.algorithm.JarvisMarcher;
 import com.github.zinfidel.jarvis_march.geometry.Angle;
 import com.github.zinfidel.jarvis_march.geometry.ConvexHull;
 import com.github.zinfidel.jarvis_march.geometry.Model;
@@ -26,6 +27,7 @@ public class GeometryPanel extends JPanel {
     
     // TODO: TESTING CODE!
     public Model model = null;
+    public JarvisMarcher marcher = null;
     
     /**
      * TODO: Document
@@ -101,6 +103,20 @@ public class GeometryPanel extends JPanel {
 			     getHeight() - angle.center.y);
 	    }
 	}
+	
+	Vector next = marcher != null ? marcher.getNextVector() : null;
+	if (next != null) {
+	    g.setColor(Color.YELLOW);
+	    GeometryDrawer.draw(next, g);
+	}
+	
+	Vector best = marcher != null? marcher.getBestVector() : null;
+	if (best != null) {
+	    g.setColor(Color.RED);
+	    GeometryDrawer.draw(best, g);
+	}
+	
+	g.setColor(Color.BLACK);
     }
 
 }
