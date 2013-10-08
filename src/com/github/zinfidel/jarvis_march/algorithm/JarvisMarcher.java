@@ -10,10 +10,7 @@ import com.github.zinfidel.jarvis_march.geometry.Vector;
 
 // TODO Document me
 public class JarvisMarcher {
-    
-    /** The model that the marcher is currently operating on. */
-    private Model model = null;
-    
+      
     /** The convex hull that the marcher is current constructing. */
     private ConvexHull hull = null;
     
@@ -37,21 +34,11 @@ public class JarvisMarcher {
 
    
     /**
-     * Constructs a Jarvis Marcher operating on a given model.
-     * 
-     * @param model The model to operate on.
-     */
-    public JarvisMarcher(Model model) {
-	this.model = model;
-	this.hull = model.newHull();
-    }
-
-    /**
      * Solves the convex hull problem for the model associated with this
      * JarvisMarch object. This can solve for a brand new convex hull or
      * for a partially completed hull.
      */
-    public void solve() {
+    public void solve(Model model) {
 
 	// Get the point cloud, ensure it is not degenerate for a CH.
 	Set<Point> points = model.getPoints();
@@ -59,6 +46,7 @@ public class JarvisMarcher {
 		"Degenerate geometry detected: Less than 3 vertices.");
 	
 	// Start solving - go until the hull is closed.
+	ConvexHull hull = model.newHull();
 	while (!hull.isClosed()) {
 
 	    for (Point point : points) {
@@ -81,7 +69,7 @@ public class JarvisMarcher {
 	    
 	    // If we don't have a best point, something went wrong.
 	    if (bestPoint == null) throw new DegenerateGeometryException(
-	        "No valid point was found to add - probably degenerate geometry");
+	        "No valid point was found to add - probably degenerate geometry.");
 	    
 	    // Add the best point to the hull, then clear the algorithm state
 	    // for the next iteration.
@@ -91,6 +79,14 @@ public class JarvisMarcher {
 	}
     }
     
+    // TODO: Document me.
+    public boolean iterate() {
+	
+	
+	
+	return false;
+    }
+        
     /**
      * Sets the best proposed point for the next point in the hull.
      * Automatically updates the best vector to point to it. Note that this

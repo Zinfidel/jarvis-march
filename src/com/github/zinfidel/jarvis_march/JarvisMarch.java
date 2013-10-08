@@ -164,8 +164,8 @@ public class JarvisMarch extends JFrame {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    JarvisMarcher marcher = new JarvisMarcher(model);
-	    marcher.solve();
+	    JarvisMarcher marcher = new JarvisMarcher();
+	    marcher.solve(model);
 	    geoPanel.repaint();
 	}
     }
