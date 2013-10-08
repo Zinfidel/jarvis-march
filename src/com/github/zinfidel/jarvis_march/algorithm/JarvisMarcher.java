@@ -58,7 +58,8 @@ public class JarvisMarcher {
 	// Iterate until we get false back, CH is solved then.
 	while (iterate());
     }
-        
+
+
     /**
      * Solves one atomic "unit" of the Jarvis' March algorithm on the current
      * model. This can simply update the next-best point/vector/angle, update
@@ -137,7 +138,7 @@ public class JarvisMarcher {
      * 
      * @param point The new best proposed point, or null.
      */
-    public void setBestPoint(Point point) {
+    private void setBestPoint(Point point) {
 	bestPoint = point;
 	Point curPoint = hull.getCurPoint();
 	Vector curVector = hull.getCurVector();
@@ -163,6 +164,7 @@ public class JarvisMarcher {
 	return bestVector;
     }
   
+    
     /**
      * Sets the point being considered for the next point in the hull.
      * Automatically updates the next vector to point to it. Note that this
@@ -173,7 +175,7 @@ public class JarvisMarcher {
      * 
      * @param point The next proposed point, or null.
      */
-    public void setNextPoint(Point point) {
+    private void setNextPoint(Point point) {
 	nextPoint = point;
 	Point curPoint = hull.getCurPoint();
 	Vector curVector = hull.getCurVector();
@@ -188,12 +190,14 @@ public class JarvisMarcher {
 		      nextVector.angle,
 		      curPoint);
     }
-    
+
+
     /** @return The current point being considered for best point. */
     public Point getNextPoint() {
 	return nextPoint;
     }
-    
+
+
     /** @return The current vector being considered for best vector. */
     public Vector getNextVector() {
 	return nextVector;
