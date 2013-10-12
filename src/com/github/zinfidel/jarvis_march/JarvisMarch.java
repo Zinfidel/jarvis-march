@@ -13,13 +13,13 @@ import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.NumberFormatter;
 import javax.swing.Timer;
 
-import com.github.zinfidel.jarvis_march.algorithm.JarvisMarcher;
-import com.github.zinfidel.jarvis_march.algorithm.PointGenerator;
+import com.github.zinfidel.jarvis_march.algorithm.*;
 import com.github.zinfidel.jarvis_march.geometry.Model;
 import com.github.zinfidel.jarvis_march.geometry.Point;
 import com.github.zinfidel.jarvis_march.visualization.GeometryPanel;
@@ -30,22 +30,29 @@ import com.github.zinfidel.jarvis_march.visualization.GeometryPanel;
  */
 public class JarvisMarch extends JFrame {
 
+    // TODO: Document all this?
     private static final long serialVersionUID = -2988707585939084412L;
-    private static final int width = 640; // TODO Specify as starting width?
+    private static final int width = 640;
     private static final int height = 480;
     
+    /** The current Jarvis marcher. Do not set manually! Use setMarcher(). */
+    private JarvisMarcher marcher = null;
+    
+    private final Model model = new Model();
     private GeometryPanel geoPanel;
     
-    private Model model = new Model();
 
     /**
-     * TODO: Document
+     * Constructs the GUI and sets up the data elements.
      */
     public JarvisMarch() {
 	super();
 	initGUI();
+	
+	geoPanel.setModel(model); // Set the model to be rendered.
     }
 
+    
     /**
      * Starts the program by displaying the GUI.
      * 
@@ -59,6 +66,7 @@ public class JarvisMarch extends JFrame {
 	    }
 	});
     }
+
 
     /**
      * Initializes the Swing GUI elements of this frame and sets this
@@ -78,8 +86,6 @@ public class JarvisMarch extends JFrame {
 
 	// Set up the geometry viewing pane.
 	GeometryPanel pnlGeometry = new GeometryPanel();
-	// TODO: TESTING CODE!
-	pnlGeometry.model = model;
 	contentFrame.add(pnlGeometry, BorderLayout.CENTER);
 	geoPanel = pnlGeometry; // Set the member variable.
 
@@ -87,7 +93,7 @@ public class JarvisMarch extends JFrame {
 	JPanel pnlControls = new JPanel(new FlowLayout());
 	contentFrame.add(pnlControls, BorderLayout.SOUTH);
 
-	// Set up point-count label, entry field, and generate button.
+	// Set up points label, entry field, and generate button.
 	JLabel lblNumberOfPoints = new JLabel("Number of Points:");
 	pnlControls.add(lblNumberOfPoints);
 
@@ -122,20 +128,22 @@ public class JarvisMarch extends JFrame {
 	JLabel lblTimeUnits = new JLabel("ms");
 	pnlControls.add(lblTimeUnits);
     }
-    
-    
+
+
     /*
      * Action Listeners
      */
-    
+
+
     /**
      * Generates points in the model and updates the visualization. The number
      * of points generated is retreived from the points formatted field.
      */
     private class GeneratePoints implements ActionListener {
-	
+
+	// Text field containing number of points to generate.
 	private JFormattedTextField ftfPoints;
-	
+
 	public GeneratePoints(JFormattedTextField ftfPoints) {
 	    this.ftfPoints = ftfPoints;
 	}
@@ -145,41 +153,53 @@ public class JarvisMarch extends JFrame {
 	    // Clear points, establish boundaries.
 	    model.clearPoints();
 	    Point bounds = new Point(geoPanel.getWidth(),
-		                     geoPanel.getHeight());
-	    
+		    geoPanel.getHeight());
+
 	    // Create the random points.
 	    for (int n = 0; n < (int) ftfPoints.getValue(); n++) {
 		model.addPoint(PointGenerator.normalRandom(bounds));
 	    }
-	    
+
 	    // Update the drawing.
 	    geoPanel.repaint();
 	}
     }
-    
-    // TODO Document
+
+
+    /**
+     * Runnable that solves the current problem in its entirety all at once.
+     */
     private class CalculateCH implements ActionListener {
 
-	// TODO: Gray out option if no points on screen.
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    JarvisMarcher marcher = new JarvisMarcher(model);
-	    marcher.solve();
-	    geoPanel.repaint();
+	    try {
+		// Initialize a marcher, solve the problem, then display it.
+		setMarcher(new JarvisMarcher(model));
+		marcher.solve();
+		geoPanel.repaint();
+
+	    } catch (DegenerateGeometryException ex) {
+		// Display an error dialog.
+		JOptionPane.showMessageDialog(
+			JarvisMarch.this,
+			ex.getMessage(),
+			"Degenerate Geometry",
+			JOptionPane.ERROR_MESSAGE);
+	    }
 	}
     }
-    
+
+
     // TODO: This all probably needs to be reimplemented in some background way.
     private class IterativelyCalculateCH implements ActionListener {
 	
-	private JarvisMarcher marcher = null;
 	Timer timer = null;
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 	    
-	    marcher = new JarvisMarcher(model);
-	    geoPanel.marcher = marcher;
+	    setMarcher(new JarvisMarcher(model));
 
 	    timer = new Timer(25, new ActionListener() {
 		public void actionPerformed(ActionEvent evt) {
@@ -193,10 +213,12 @@ public class JarvisMarch extends JFrame {
 	}
 	
     }
-        
+
+    
     /*
      * Utility
      */
+
 
     /**
      * Formatter for the integer fields that allows for 4 digits.
@@ -217,4 +239,15 @@ public class JarvisMarch extends JFrame {
 	return formatter;
     }
 
+    
+    /**
+     * Sets the current marcher being used to solve the convex hull. This method
+     * ensures that the geometry panel is synchronized with the new marcher.
+     * 
+     * @param marcher The new Jarvis Marcher.
+     */
+    private void setMarcher(JarvisMarcher marcher) {
+	this.marcher = marcher;
+	geoPanel.setMarcher(marcher);
+    }
 }

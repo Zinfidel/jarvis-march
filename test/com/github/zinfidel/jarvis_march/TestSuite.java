@@ -8,7 +8,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-// TODO: Maybe separate this into multiple statements for different packages.
 @SuiteClasses({ TestConvexHull.class, TestModel.class, TestPoint.class,
 	TestVector.class, TestJarvisMarcher.class })
 

@@ -4,7 +4,19 @@ import java.util.Iterator;
 
 import com.github.zinfidel.jarvis_march.geometry.*;
 
-// TODO Document me
+/**
+ * This class is the brains behind the operation, and provides a couple methods
+ * of solving a convex hull problem. Standard use involves creating a new
+ * marcher object every time a new model is being solved (different point
+ * cloud, basically). The iterate method solves one atomic unit of the
+ * algorithm, while solve method will solve it all at once, and update at the
+ * end.
+ * 
+ * This class has the objects nextPoint/Vector and bestPoint/Vector, which are
+ * used internally, but also are used in rendering. This object, when used
+ * in conjunction with the JarvisMarch main panel, should always install itself
+ * to the geometry panel so it can be used for drawing objects.
+ */
 public class JarvisMarcher {
     
     /** The model that the marcher is currently operating on. */
