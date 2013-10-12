@@ -149,7 +149,7 @@ public class JarvisMarch extends JFrame {
 	    
 	    // Create the random points.
 	    for (int n = 0; n < (int) ftfPoints.getValue(); n++) {
-		model.addPoint(PointGenerator.random(bounds));
+		model.addPoint(PointGenerator.normalRandom(bounds));
 	    }
 	    
 	    // Update the drawing.
