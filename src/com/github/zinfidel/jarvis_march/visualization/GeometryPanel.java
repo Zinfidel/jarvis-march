@@ -92,7 +92,7 @@ public class GeometryPanel extends JPanel {
 	// Draw next vector, if available.
 	Vector next = marcher != null ? marcher.getNextVector() : null;
 	if (next != null) {
-	    g.setColor(Color.YELLOW);
+	    g.setColor(Color.GREEN);
 	    GeometryDrawer.draw(next, g);
 	}
 	

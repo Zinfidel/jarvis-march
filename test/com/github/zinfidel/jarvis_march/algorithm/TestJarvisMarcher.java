@@ -61,41 +61,31 @@ public class TestJarvisMarcher {
 	assertEquals(point40, points.get(2));
     }
     
-    //@Test
-    // TODO: Refactor this to test via iterate().
+    @Test
     public final void testSetBestPoint() {
 	
 	// Set up model with origin point and marcher.
 	model.addPoint(Point.ORIGIN);
+	model.addPoint(Point11);
 	JarvisMarcher marcher = new JarvisMarcher(model);
 
 	// Set regular point.
-	//marcher.setBestPoint(Point11);
+	marcher.iterate();
 	assertEquals(Point11, marcher.getBestPoint());
 	assertEquals(Vector11, marcher.getBestVector());
-
-	// Test null point (erasure).
-	//marcher.setBestPoint(null)
-	assertNull(marcher.getBestPoint());
-	assertNull(marcher.getBestVector());
     }
 
-    //@Test
-    // TODO: Refactor this to test via iterate().
+    @Test
     public final void testSetNextPoint() {
 	// Set up model with origin point and marcher.
 	model.addPoint(Point.ORIGIN);
+	model.addPoint(Point11);
 	JarvisMarcher marcher = new JarvisMarcher(model);
 	
 	// Set regular point.
-	//marcher.setNextPoint(Point11);
+	marcher.iterate();
 	assertEquals(Point11, marcher.getNextPoint());
 	assertEquals(Vector11, marcher.getNextVector());
-
-	// Test null point (erasure).
-	//marcher.setNextPoint(null);
-	assertNull(marcher.getNextPoint());
-	assertNull(marcher.getNextVector());
     }
     
     @Test(timeout=3000)

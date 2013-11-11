@@ -1,6 +1,7 @@
 package com.github.zinfidel.jarvis_march;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -25,12 +26,13 @@ import com.github.zinfidel.jarvis_march.geometry.Point;
 import com.github.zinfidel.jarvis_march.visualization.GeometryPanel;
 
 /**
- * @author Zach Friedland
- *
+ * A class that provides a graphical representation of solving a convex hull for
+ * an arbitrary cloud of points. This class can generate a cloud of points
+ * (according to a Guassian distribution), then solve it all at once, one step
+ * at a time, or continuously.
  */
 public class JarvisMarch extends JFrame {
 
-    // TODO: Document all this?
     private static final long serialVersionUID = -2988707585939084412L;
     private static final int width = 640;
     private static final int height = 480;
@@ -40,6 +42,7 @@ public class JarvisMarch extends JFrame {
     
     private final Model model = new Model();
     private GeometryPanel geoPanel;
+    private JPanel controlsPanel;
     
 
     /**
@@ -92,6 +95,7 @@ public class JarvisMarch extends JFrame {
 	// Set up the controls panel.
 	JPanel pnlControls = new JPanel(new FlowLayout());
 	contentFrame.add(pnlControls, BorderLayout.SOUTH);
+	controlsPanel = pnlControls;
 
 	// Set up points label, entry field, and generate button.
 	JLabel lblNumberOfPoints = new JLabel("Number of Points:");
@@ -113,20 +117,23 @@ public class JarvisMarch extends JFrame {
 
 	// Set up the iterate button.
 	JButton btnIterate = new JButton("Iterate");
-	btnIterate.addActionListener(new IterativelyCalculateCH());
 	pnlControls.add(btnIterate);
 
 	// Set up the auto-run checkbox, delay field, and time units label.
 	JCheckBox chckbxAuto = new JCheckBox("Auto");
 	pnlControls.add(chckbxAuto);
 
-	JFormattedTextField ftfDelay = new JFormattedTextField();
+	JFormattedTextField ftfDelay = new JFormattedTextField(getNumFormat());
 	ftfDelay.setColumns(4);
-	ftfDelay.setText("100");
+	ftfDelay.setValue(new Integer(100));
 	pnlControls.add(ftfDelay);
 
 	JLabel lblTimeUnits = new JLabel("ms");
 	pnlControls.add(lblTimeUnits);
+
+	// Add the iterate button's action listener.
+	btnIterate.addActionListener(
+		new IterativelyCalculateCH(chckbxAuto, ftfDelay));
     }
 
 
@@ -150,8 +157,9 @@ public class JarvisMarch extends JFrame {
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-	    // Clear points, establish boundaries.
+	    // Clear points, clear existing marchers, establish boundaries.
 	    model.clearPoints();
+	    marcher = null;
 	    Point bounds = new Point(geoPanel.getWidth(),
 		    geoPanel.getHeight());
 
@@ -191,27 +199,84 @@ public class JarvisMarch extends JFrame {
     }
 
 
-    // TODO: This all probably needs to be reimplemented in some background way.
+    /**
+     * Actionlistener that either iterates one step of the Jarvis March
+     * algorithm, or continuously iterates until the convex hull is solved.
+     */
     private class IterativelyCalculateCH implements ActionListener {
 	
-	Timer timer = null;
+	// The "auto" checkbox and iteration delay field.
+	private JCheckBox autoChkBox = null;
+	private JFormattedTextField ftfDelay= null;
+	
+	// Used if the auto checkbox is ticked.
+	private Timer timer = null;
 
+	public IterativelyCalculateCH(JCheckBox autoChkBox,
+				      JFormattedTextField ftfDelay) {
+	    this.autoChkBox = autoChkBox;
+	    this.ftfDelay = ftfDelay;
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 	    
-	    setMarcher(new JarvisMarcher(model));
-
-	    timer = new Timer(25, new ActionListener() {
-		public void actionPerformed(ActionEvent evt) {
-		    if (!marcher.iterate()) timer.stop();
-		    geoPanel.repaint();
-		}    
-	    });
+	    if (JarvisMarch.this.marcher == null)
+        	    setMarcher(new JarvisMarcher(model));
 	    
-	    timer.start();
+	    // If the auto checkbox is ticked, start a background timer and
+	    // continuously iterate. Otherwise iterate once.
+	    if (autoChkBox.isSelected()) {
+		int delay = (Integer)ftfDelay.getValue();
+		toggleControls(false);
+		
+		timer = new Timer(delay, new ActionListener() {
+		    public void actionPerformed(ActionEvent evt) {
 
+			// Iterate until the iterator returns false (done), then
+			// toggle the controls back on.
+			try {
+			    if (!marcher.iterate()) {
+				timer.stop();
+				toggleControls(true);
+			    }
+			    geoPanel.repaint();
+			    
+			// Stop the timer, enable controls, and display an error
+			// message if an exception is thrown.
+			} catch (DegenerateGeometryException ex) {
+			    timer.stop();
+			    toggleControls(true);
+
+			    // Display an error dialog.
+			    JOptionPane.showMessageDialog(
+				    JarvisMarch.this,
+				    ex.getMessage(),
+				    "Degenerate Geometry",
+				    JOptionPane.ERROR_MESSAGE);
+			}
+		    }    
+		});
+
+		timer.start();
+
+	    }
+
+	    // Just iterate once.
+	    else {
+		try {
+		    marcher.iterate();
+		    geoPanel.repaint();
+		} catch (DegenerateGeometryException ex) {
+		    // Display an error dialog.
+		    JOptionPane.showMessageDialog(
+			    JarvisMarch.this,
+			    ex.getMessage(),
+			    "Degenerate Geometry",
+			    JOptionPane.ERROR_MESSAGE);
+		}
+	    }
 	}
-	
     }
 
     
@@ -240,6 +305,18 @@ public class JarvisMarch extends JFrame {
     }
 
     
+    /**
+     * Toggles the enable state of all of the controls on the GUI.
+     * 
+     * @param state True to enable the controls, false to disable them.
+     */
+    private void toggleControls(boolean state) {
+	for(Component comp : controlsPanel.getComponents()) {
+	    comp.setEnabled(state);
+	}
+    }
+
+
     /**
      * Sets the current marcher being used to solve the convex hull. This method
      * ensures that the geometry panel is synchronized with the new marcher.
